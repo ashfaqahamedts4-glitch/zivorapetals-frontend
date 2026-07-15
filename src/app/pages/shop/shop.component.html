@@ -1,0 +1,200 @@
+<div class="shop-page container">
+  <!-- Search/Filter Header row -->
+  <section class="shop-header">
+    <h2 class="luxury-heading">Signature Gifts Catalog</h2>
+    
+    <div class="shop-search-bar-row">
+      <form class="shop-search-form" (submit)="handleSearchSubmit($event)">
+        <input
+          type="text"
+          placeholder="Search wood crafts, gift boxes, bags..."
+          [(ngModel)]="searchInput"
+          name="searchInput"
+          class="form-input"
+        />
+        <button type="submit" class="btn-premium search-submit-btn">Search</button>
+      </form>
+      
+      <button 
+        class="mobile-filter-toggle btn-secondary"
+        (click)="toggleMobileFilters()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <span>Filters</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Grid Layout -->
+  <div class="shop-main-layout">
+    <!-- Filter Sidebar -->
+    <aside class="shop-filters-sidebar" [class.mobile-show]="showMobileFilters">
+      <!-- Mobile Close filters -->
+      <div class="mobile-filter-header" *ngIf="showMobileFilters">
+        <h3>Filter Products</h3>
+        <button class="mobile-close-filters-btn" (click)="toggleMobileFilters()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Categories -->
+      <div class="filter-widget">
+        <h4>Categories</h4>
+        <div class="filter-options-list">
+          <button
+            class="filter-link-btn"
+            [class.active]="categoryId === ''"
+            (click)="updateFilters({ category: '', page: 1 }); toggleMobileFilters()"
+          >
+            All Categories
+          </button>
+          <button
+            *ngFor="let cat of categories"
+            class="filter-link-btn"
+            [class.active]="categoryId === cat._id"
+            (click)="updateFilters({ category: cat._id, page: 1 }); toggleMobileFilters()"
+          >
+            {{ cat.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Price Limits -->
+      <div class="filter-widget">
+        <h4>Price Range</h4>
+        <form (submit)="handlePriceApply($event); toggleMobileFilters()" class="price-filter-form">
+          <div class="price-inputs">
+            <input
+              type="number"
+              placeholder="Min ₹"
+              [(ngModel)]="localMinPrice"
+              name="localMinPrice"
+              class="form-input price-input"
+            />
+            <span>to</span>
+            <input
+              type="number"
+              placeholder="Max ₹"
+              [(ngModel)]="localMaxPrice"
+              name="localMaxPrice"
+              class="form-input price-input"
+            />
+          </div>
+          <button type="submit" class="btn-gold price-apply-btn">Apply Price</button>
+        </form>
+      </div>
+
+      <!-- Sorting Select -->
+      <div class="filter-widget">
+        <h4>Sort By</h4>
+        <select
+          [ngModel]="sortBy + '-' + sortOrder"
+          (ngModelChange)="updateFilters({ sortBy: $event.split('-')[0], sortOrder: $event.split('-')[1], page: 1 })"
+          name="sortOption"
+          class="form-input sort-select"
+        >
+          <option value="createdAt-desc">Newest Arrivals</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Alphabetical: A-Z</option>
+        </select>
+      </div>
+
+      <!-- Reset button -->
+      <button (click)="resetFilters(); toggleMobileFilters()" class="btn-secondary reset-filters-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <span>Reset Filters</span>
+      </button>
+    </aside>
+
+    <!-- Products grid catalog -->
+    <main class="shop-catalog-area">
+      <div class="catalog-loading flex-center" *ngIf="loading">
+        <div class="luxury-spinner"></div>
+        <p>Arranging collection...</p>
+      </div>
+
+      <ng-container *ngIf="!loading">
+        <div class="catalog-meta-row" *ngIf="products.length > 0">
+          <span class="results-count">Showing {{ totalProducts }} premium products</span>
+        </div>
+
+        <div class="shop-products-grid" *ngIf="products.length > 0; else emptyState">
+          <div *ngFor="let prod of products" class="product-card luxury-card">
+            <a [routerLink]="['/product', prod.slug]" class="product-card-link">
+              <div class="product-card-img">
+                <img
+                  [src]="getImageUrl(prod.thumbnail)"
+                  [alt]="prod.name"
+                  (error)="onImageError($event)"
+                />
+                <span class="product-badge badge-gold" *ngIf="prod.newArrival">New</span>
+                <span class="product-badge badge-dark" *ngIf="prod.stock === 0">Sold Out</span>
+              </div>
+              <div class="product-card-info">
+                <span class="product-sku">{{ prod.sku }}</span>
+                <h3>{{ prod.name }}</h3>
+                <p class="product-short-desc">{{ prod.shortDescription }}</p>
+                <div class="product-price-block">
+                  <span class="current-price">
+                    ₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}
+                  </span>
+                  <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                    ₹{{ prod.price }}
+                  </span>
+                </div>
+              </div>
+            </a>
+            <button
+              class="btn-premium add-to-bag-btn"
+              (click)="addToBag(prod)"
+              [disabled]="prod.stock === 0"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Add To Bag</span>
+            </button>
+          </div>
+        </div>
+
+        <ng-template #emptyState>
+          <div class="catalog-empty text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-catalog-icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <h3>No gifts found</h3>
+            <p>Try resetting filters or searching with a different term.</p>
+            <button (click)="resetFilters()" class="btn-premium mt-16">View All Collection</button>
+          </div>
+        </ng-template>
+
+        <!-- Pagination -->
+        <div class="pagination-bar" *ngIf="totalPages > 1">
+          <button
+            class="pagination-arrow"
+            (click)="handlePageChange(page - 1)"
+            [disabled]="page === 1"
+            aria-label="Previous page"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          
+          <button
+            *ngFor="let pageNum of getPagesArray()"
+            class="pagination-number"
+            [class.active]="page === pageNum"
+            (click)="handlePageChange(pageNum)"
+          >
+            {{ pageNum }}
+          </button>
+
+          <button
+            class="pagination-arrow"
+            (click)="handlePageChange(page + 1)"
+            [disabled]="page === totalPages"
+            aria-label="Next page"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </ng-container>
+    </main>
+  </div>
+</div>

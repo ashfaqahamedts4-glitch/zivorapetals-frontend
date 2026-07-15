@@ -1,0 +1,178 @@
+<div class="product-detail-page container">
+  <!-- Back button navigation -->
+  <div class="back-navigation">
+    <button (click)="goBack()" class="back-btn flex-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span>Back to Catalog</span>
+    </button>
+  </div>
+
+  <!-- Loading state -->
+  <div class="product-detail-loading flex-center" *ngIf="loading">
+    <div class="luxury-spinner"></div>
+    <p>Loading masterpiece details...</p>
+  </div>
+
+  <!-- Error state -->
+  <div class="product-detail-error text-center" *ngIf="error || !product">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    <h3>Masterpiece Not Found</h3>
+    <p>{{ error || "We couldn't retrieve the details for this item." }}</p>
+    <a routerLink="/shop" class="btn-premium mt-16">Back to Catalog</a>
+  </div>
+
+  <!-- Loaded layout details -->
+  <div class="product-detail-layout" *ngIf="!loading && product">
+    <!-- Gallery Section -->
+    <div class="product-gallery-side">
+      <div class="product-main-image-container">
+        <img
+          [src]="getImageUrl(selectedImage)"
+          [alt]="product.name"
+          (error)="onImageError($event)"
+        />
+      </div>
+      <div class="product-thumbnails-strip" *ngIf="gallery.length > 1">
+        <button
+          *ngFor="let imgUrl of gallery"
+          class="thumbnail-btn"
+          [class.active]="selectedImage === imgUrl"
+          (click)="selectImage(imgUrl)"
+        >
+          <img
+            [src]="getImageUrl(imgUrl)"
+            [alt]="product.name"
+            (error)="onImageError($event, 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=100&auto=format&fit=crop')"
+          />
+        </button>
+      </div>
+    </div>
+
+    <!-- Product Info side -->
+    <div class="product-info-side">
+      <span class="product-detail-sku">SKU: {{ product.sku }}</span>
+      <h2 class="product-detail-name">{{ product.name }}</h2>
+
+      <!-- Stock Status badge -->
+      <div class="product-rating-row">
+        <span class="stock-status-badge">
+          <span class="status-in-stock" *ngIf="product.stock > 0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><polyline points="20 6 9 17 4 12"/></svg>
+            In Stock ({{ product.stock }} available)
+          </span>
+          <span class="status-out-of-stock" *ngIf="product.stock === 0">
+            Out of Stock
+          </span>
+        </span>
+      </div>
+
+      <!-- Pricing Block -->
+      <div class="product-price-row">
+        <span class="detail-price">
+          ₹{{ product.discountPrice && product.discountPrice > 0 ? product.discountPrice : product.price }}
+        </span>
+        <ng-container *ngIf="product.discountPrice && product.discountPrice > 0">
+          <span class="detail-old-price">₹{{ product.price }}</span>
+          <span class="discount-percentage-badge">
+            Save {{ Math.round(((product.price - product.discountPrice) / product.price) * 100) }}%
+          </span>
+        </ng-container>
+      </div>
+
+      <p class="product-detail-short-desc">{{ product.shortDescription }}</p>
+
+      <!-- Add to bag triggers -->
+      <div class="add-to-bag-panel" *ngIf="product.stock > 0">
+        <div class="quantity-controller-label">Select Quantity:</div>
+        <div class="add-to-bag-actions-row">
+          <div class="quantity-selector">
+            <button
+              (click)="handleQtyChange(-1)"
+              [disabled]="quantity <= 1"
+              aria-label="Decrease quantity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            </button>
+            <span class="qty-number">{{ quantity }}</span>
+            <button
+              (click)="handleQtyChange(1)"
+              [disabled]="quantity >= product.stock"
+              aria-label="Increase quantity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            </button>
+          </div>
+
+          <button
+            class="btn-premium buy-now-btn"
+            (click)="handleAddToBag()"
+            [disabled]="addingToCart"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>{{ addingToCart ? 'Adding to Bag...' : 'Add To Bag' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metadata cards -->
+      <div class="product-metadata-widgets">
+        <div class="meta-widget" *ngIf="product.categoryId">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+          <span>Category: <strong>{{ product.categoryId?.name || 'Gifts' }}</strong></span>
+        </div>
+        <div class="meta-widget" *ngIf="product.tags && product.tags.length > 0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
+          <span>Tags: <strong>{{ product.tags.join(', ') }}</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom tabs panel -->
+  <section class="product-details-tabs-section" *ngIf="!loading && product">
+    <div class="tabs-header-nav">
+      <button
+        class="tab-toggle-btn"
+        [class.active]="activeTab === 'description'"
+        (click)="setActiveTab('description')"
+      >
+        Description
+      </button>
+      <button
+        class="tab-toggle-btn"
+        [class.active]="activeTab === 'details'"
+        (click)="setActiveTab('details')"
+      >
+        Product Specs & Packaging
+      </button>
+    </div>
+
+    <div class="tab-content-body">
+      <div class="tab-pane-content" *ngIf="activeTab === 'description'">
+        <p>{{ product.description || product.shortDescription }}</p>
+      </div>
+      <div class="tab-pane-content" *ngIf="activeTab === 'details'">
+        <table class="specs-table">
+          <tbody>
+            <tr>
+              <th>SKU Ref</th>
+              <td>{{ product.sku }}</td>
+            </tr>
+            <tr>
+              <th>Packaging Style</th>
+              <td>Zivora velvet pouch with gold bow wrapping box</td>
+            </tr>
+            <tr>
+              <th>Item Stock</th>
+              <td>{{ product.stock }} items left</td>
+            </tr>
+            <tr>
+              <th>Collection Origin</th>
+              <td>Zivora Petals Handicraft Studio</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

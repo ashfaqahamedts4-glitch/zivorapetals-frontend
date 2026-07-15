@@ -1,0 +1,50 @@
+<div class="login-wrapper flex-center">
+  <div class="login-card luxury-card">
+    <div class="login-header text-center">
+      <h2 class="brand-title">Zivora</h2>
+      <p class="brand-subtitle">Administrator Portal</p>
+    </div>
+
+    <!-- Error notice -->
+    <div class="login-error-banner" *ngIf="error">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        style="margin-right: 8px;">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" x2="12" y1="8" y2="12" />
+        <line x1="12" x2="12.01" y1="16" y2="16" />
+      </svg>
+      <span>{{ error }}</span>
+    </div>
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-group">
+        <label class="form-label">Admin Email *</label>
+        <input type="email" required [(ngModel)]="email" name="email" class="form-input"
+          placeholder="admin@zivora.com" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input type="password" required [(ngModel)]="password" name="password" class="form-input"
+          placeholder="••••••••" />
+      </div>
+
+      <button type="submit" class="btn-premium login-submit-btn" [disabled]="loading">
+        {{ loading ? 'Authenticating...' : 'Sign In to Dashboard' }}
+      </button>
+    </form>
+
+    <div class="login-footer text-center">
+      <a routerLink="/" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          style="margin-right: 6px; display: inline-block; vertical-align: middle;">
+          <line x1="19" x2="5" y1="12" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        <span style="vertical-align: middle;">Return to Storefront</span>
+      </a>
+    </div>
+  </div>
+</div>

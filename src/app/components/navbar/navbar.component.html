@@ -1,0 +1,49 @@
+<header class="site-header">
+  <div class="container header-container">
+    <!-- Mobile Menu Button -->
+    <button 
+      class="mobile-toggle-btn"
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle Menu"
+    >
+      <ng-container *ngIf="mobileMenuOpen; else menuIcon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+      </ng-container>
+      <ng-template #menuIcon>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      </ng-template>
+    </button>
+
+    <!-- Brand Logo -->
+    <a routerLink="/" class="header-logo-link" (click)="closeMobileMenu()">
+      <app-logo [width]="180" [height]="50"></app-logo>
+    </a>
+
+    <!-- Navigation -->
+    <nav class="header-nav" [class.mobile-open]="mobileMenuOpen">
+      <a routerLink="/" class="nav-link" (click)="closeMobileMenu()">Home</a>
+      <a routerLink="/shop" class="nav-link" (click)="closeMobileMenu()">Shop Collection</a>
+      <a routerLink="/" fragment="about" class="nav-link" (click)="closeMobileMenu()">About Us</a>
+      <a routerLink="/" fragment="contact" class="nav-link" (click)="closeMobileMenu()">Contact</a>
+    </nav>
+
+    <!-- Action Buttons -->
+    <div class="header-actions">
+      <!-- Admin Link -->
+      <a routerLink="/admin" class="header-action-btn admin-btn" title="Admin Portal" (click)="closeMobileMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="btn-text">Admin</span>
+      </a>
+
+      <!-- Bag -->
+      <button 
+        class="header-action-btn cart-btn" 
+        (click)="onToggleCart(); closeMobileMenu()"
+        aria-label="View Cart"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" *ngIf="(cartService.cartCount$ | async) as count">{{ count }}</span>
+      </button>
+    </div>
+  </div>
+</header>

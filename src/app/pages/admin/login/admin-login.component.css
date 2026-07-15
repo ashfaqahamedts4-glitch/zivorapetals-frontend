@@ -1,0 +1,975 @@
+.admin-dashboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  background-color: var(--bg-cream);
+}
+
+/* Sidebar navigation */
+.admin-sidebar {
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand h2 {
+  font-family: var(--font-serif);
+  font-size: 28px;
+  color: var(--accent-color);
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.sidebar-brand span {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.sidebar-nav {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-tab-btn {
+  background: none;
+  border: none;
+  color: #B29AA0;
+  text-align: left;
+  cursor: pointer;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition-fast);
+  width: 100%;
+}
+
+.nav-tab-btn:hover {
+  color: var(--text-light);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.nav-tab-btn.active {
+  color: var(--text-light);
+  background-color: var(--primary-color);
+}
+
+.logout-btn {
+  margin-top: 40px;
+  color: #E57373;
+}
+
+.logout-btn:hover {
+  background-color: rgba(229, 115, 115, 0.1);
+  color: #FF8A80;
+}
+
+.orders-pending-badge {
+  background-color: var(--accent-color);
+  color: var(--text-dark);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  margin-left: auto;
+}
+
+/* Main Viewport */
+.admin-main-viewport {
+  padding: 40px;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.admin-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 24px;
+}
+
+.header-tab-title h2 {
+  font-size: 28px;
+}
+
+.header-tab-title p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.admin-header-profile {
+  gap: 12px;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.admin-header-profile span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.admin-content-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 30px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Metrics Overview grid */
+.metrics-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.metric-summary-card {
+  background-color: var(--bg-cream);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.metric-summary-card h4 {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-family: var(--font-serif);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.metric-summary-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.metric-summary-card.alert {
+  border-color: #FFCDD2;
+  background-color: #FFEBEE;
+}
+
+.metric-summary-card.alert .metric-value {
+  color: var(--danger-color);
+}
+
+/* Action Rows */
+.panel-actions-row {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Modals Overlay */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(31, 5, 11, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.admin-form-card {
+  width: 100%;
+  max-width: 500px;
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  border: 1px solid rgba(197, 168, 128, 0.3);
+  box-shadow: 0 20px 40px rgba(97, 11, 36, 0.15), 0 0 0 1px rgba(197, 168, 128, 0.15);
+  animation: modalPopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.admin-form-card h3 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 14px;
+}
+
+.admin-form-card .btn-secondary {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background: transparent;
+  padding: 10px 24px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.admin-form-card .btn-secondary:hover {
+  background-color: var(--primary-soft);
+}
+
+.form-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 16px;
+}
+
+/* Tables */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table th {
+  background-color: var(--bg-cream);
+  color: var(--primary-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+.admin-table tr:hover {
+  background-color: rgba(97, 11, 36, 0.02);
+}
+
+/* Orders Details Modal Grid split */
+.order-detail-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 30px;
+}
+
+.order-modal-info h4,
+.order-modal-receipt-side h4 {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--primary-color);
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.order-modal-info p {
+  font-size: 14px;
+  color: var(--text-dark);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+
+/* Banners reviews split */
+.banners-admin-split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.banners-column h3,
+.testimonials-column h3 {
+  font-size: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Zoom Image Modal */
+.zoom-image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 600;
+  padding: 24px;
+}
+
+.zoom-image-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.zoom-image-content img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--accent-color);
+}
+
+.zoom-close-btn {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+}
+
+/* Responsive grid layouts — UNCHANGED, exactly as before */
+@media (max-width: 992px) {
+  .admin-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .metrics-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .banners-admin-split-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* --- FIX: on stacked mobile layout the sidebar sits ABOVE the main
+     viewport, but main-viewport still forced height:100vh + its own
+     scroll. That makes the page taller than one screen and the browser
+     "jumps"/behaves like a broken full-screen view whenever it resizes
+     or rotates. Switching to natural height here lets the whole page
+     scroll as one normal document, which is what stacked mobile needs. */
+  .admin-main-viewport {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-detail-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   PREMIUM UI ENHANCEMENTS — animations & micro-interactions only.
+   No colors, spacing, grid structure, or mobile breakpoints are changed.
+   Everything below still reads its color from the same theme variables.
+   ========================================================================== */
+
+/* Smooth global feel */
+.admin-main-viewport {
+  scroll-behavior: smooth;
+}
+
+.admin-main-viewport::-webkit-scrollbar,
+.table-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-main-viewport::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+.admin-main-viewport::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color);
+}
+
+/* Brand mark: quiet shimmer sweep across the wordmark */
+.sidebar-brand h2 {
+  position: relative;
+  background-image: linear-gradient(100deg,
+      var(--accent-color) 30%,
+      var(--text-light) 50%,
+      var(--accent-color) 70%);
+  background-size: 220% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brandShimmer 6s ease-in-out infinite;
+}
+
+@keyframes brandShimmer {
+  0% {
+    background-position: 0% center;
+  }
+
+  50% {
+    background-position: 100% center;
+  }
+
+  100% {
+    background-position: 0% center;
+  }
+}
+
+/* Page content entrance */
+.admin-content-card {
+  animation: contentFadeUp 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes contentFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Sidebar nav: sliding active indicator + icon micro-interaction ---- */
+.nav-tab-btn {
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  transition: color 0.25s ease, background-color 0.25s ease, transform 0.25s ease;
+}
+
+.nav-tab-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 0;
+  width: 3px;
+  background-color: var(--accent-color);
+  border-radius: var(--radius-full);
+  transform: translateY(-50%);
+  transition: height 0.25s ease;
+}
+
+.nav-tab-btn.active::before {
+  height: 60%;
+}
+
+.nav-tab-btn:hover {
+  transform: translateX(3px);
+}
+
+.nav-tab-btn:nth-child(1) .sidebar-icon {
+  animation-delay: 0.05s;
+}
+
+.nav-tab-btn:nth-child(2) .sidebar-icon {
+  animation-delay: 0.12s;
+}
+
+.nav-tab-btn:nth-child(3) .sidebar-icon {
+  animation-delay: 0.19s;
+}
+
+.nav-tab-btn:nth-child(4) .sidebar-icon {
+  animation-delay: 0.26s;
+}
+
+.nav-tab-btn:nth-child(5) .sidebar-icon {
+  animation-delay: 0.33s;
+}
+
+.nav-tab-btn:nth-child(6) .sidebar-icon {
+  animation-delay: 0.40s;
+}
+
+.nav-tab-btn:nth-child(7) .sidebar-icon {
+  animation-delay: 0.47s;
+}
+
+.nav-tab-btn .sidebar-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-tab-btn:hover .sidebar-icon {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.nav-tab-btn.active .sidebar-icon {
+  transform: scale(1.08);
+}
+
+.logout-btn:hover .sidebar-icon {
+  transform: translateX(-3px);
+}
+
+/* ---- True SVG animation: icons "draw" themselves in on first paint ----
+   Every icon here is stroke-based (fill="none" stroke="currentColor"),
+   so animating stroke-dashoffset draws the actual vector path — this is
+   real SVG/path animation, not just a CSS transform trick. */
+.sidebar-icon path,
+.sidebar-icon rect,
+.sidebar-icon line,
+.sidebar-icon circle,
+.sidebar-icon polyline {
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: iconDraw 0.9s ease forwards;
+}
+
+@keyframes iconDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Redraw the icon on hover for a premium "retrace" feel */
+.nav-tab-btn:hover .sidebar-icon path,
+.nav-tab-btn:hover .sidebar-icon rect,
+.nav-tab-btn:hover .sidebar-icon line,
+.nav-tab-btn:hover .sidebar-icon circle,
+.nav-tab-btn:hover .sidebar-icon polyline {
+  animation: iconRetrace 0.6s ease;
+}
+
+@keyframes iconRetrace {
+  0% {
+    stroke-dashoffset: 40;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Close-icon (X) buttons: same draw-in treatment + rotate on hover */
+.zoom-close-btn svg path,
+.zoom-close-btn svg line,
+.mobile-close-filters-btn svg line {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: iconDraw 0.5s ease forwards;
+}
+
+.zoom-close-btn,
+.mobile-close-filters-btn {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.zoom-close-btn:hover,
+.mobile-close-filters-btn:hover {
+  transform: rotate(90deg);
+  color: var(--accent-color);
+}
+
+/* Pending-orders badge: gentle attention pulse */
+.orders-pending-badge {
+  animation: badgePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+    transform: scale(1.08);
+  }
+}
+
+/* Avatar: soft glow ring */
+.admin-avatar {
+  position: relative;
+  transition: transform 0.25s ease;
+}
+
+.admin-avatar:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+/* Metric cards: staggered entrance + hover lift */
+.metric-summary-card {
+  animation: cardRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.metrics-summary-grid .metric-summary-card:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.metrics-summary-grid .metric-summary-card:nth-child(2) {
+  animation-delay: 0.12s;
+}
+
+.metrics-summary-grid .metric-summary-card:nth-child(3) {
+  animation-delay: 0.19s;
+}
+
+.metrics-summary-grid .metric-summary-card:nth-child(4) {
+  animation-delay: 0.26s;
+}
+
+@keyframes cardRiseIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.metric-summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-sm), 0 12px 24px rgba(97, 11, 36, 0.08);
+  border-color: var(--primary-color);
+}
+
+.metric-summary-card.alert:hover {
+  border-color: var(--danger-color);
+}
+
+.metric-value {
+  transition: transform 0.25s ease;
+}
+
+.metric-summary-card:hover .metric-value {
+  transform: translateY(-2px);
+}
+
+/* Pending-payments alert card: quiet breathing highlight */
+.metric-summary-card.alert {
+  animation: cardRiseIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards,
+    alertBreathe 3s ease-in-out infinite 0.6s;
+}
+
+@keyframes alertBreathe {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(198, 40, 40, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px rgba(198, 40, 40, 0.05);
+  }
+}
+
+/* Premium buttons: sheen sweep + tactile press */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.18s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn-premium::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(120deg,
+      transparent,
+      rgba(255, 255, 255, 0.35),
+      transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.btn-premium:hover::after {
+  left: 130%;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(97, 11, 36, 0.18);
+  filter: brightness(1.03);
+}
+
+.btn-premium:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 8px rgba(97, 11, 36, 0.15);
+}
+
+.btn-secondary {
+  transition: transform 0.18s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(97, 11, 36, 0.08);
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Table rows: staggered entrance + sliding hover accent */
+.admin-table tbody tr {
+  position: relative;
+  animation: rowFadeIn 0.4s ease backwards;
+  transition: background-color 0.2s ease;
+}
+
+.admin-table tbody tr::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background-color: var(--primary-color);
+  transition: width 0.25s ease;
+}
+
+.admin-table tbody tr:hover::before {
+  width: 3px;
+}
+
+.admin-table tbody tr:nth-child(1) {
+  animation-delay: 0.02s;
+}
+
+.admin-table tbody tr:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.admin-table tbody tr:nth-child(3) {
+  animation-delay: 0.10s;
+}
+
+.admin-table tbody tr:nth-child(4) {
+  animation-delay: 0.14s;
+}
+
+.admin-table tbody tr:nth-child(5) {
+  animation-delay: 0.18s;
+}
+
+.admin-table tbody tr:nth-child(6) {
+  animation-delay: 0.22s;
+}
+
+.admin-table tbody tr:nth-child(7) {
+  animation-delay: 0.26s;
+}
+
+.admin-table tbody tr:nth-child(8) {
+  animation-delay: 0.30s;
+}
+
+.admin-table tbody tr:nth-child(n+9) {
+  animation-delay: 0.32s;
+}
+
+@keyframes rowFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.admin-table td img {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-table tr:hover td img {
+  transform: scale(1.08);
+}
+
+/* Badges: soft pop-in + refined weight */
+.badge {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  animation: badgePopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+@keyframes badgePopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Modal overlay: fade the scrim in, keep the existing card pop-in */
+.admin-modal-overlay {
+  animation: overlayFadeIn 0.25s ease;
+}
+
+@keyframes overlayFadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Zoom preview: smooth scale-in */
+.zoom-image-overlay {
+  animation: overlayFadeIn 0.25s ease;
+}
+
+.zoom-image-content img {
+  animation: zoomImageIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes zoomImageIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Form inputs: quiet focus glow, no layout change */
+.form-input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+  outline: none;
+}
+
+/* Uploaded/preview thumbnails: soft hover zoom for a premium catalog feel */
+.admin-form-card img,
+.banner-item-card img,
+.testimonial-item-card img {
+  transition: transform 0.3s ease;
+}
+
+.admin-form-card img:hover,
+.banner-item-card img:hover,
+.testimonial-item-card img:hover {
+  transform: scale(1.05);
+}
+
+.banner-item-card,
+.testimonial-item-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.banner-item-card:hover,
+.testimonial-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.receipt-preview-box img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.receipt-preview-box img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(97, 11, 36, 0.12);
+}
+
+/* Accessible focus ring across interactive elements */
+.nav-tab-btn:focus-visible,
+.btn-premium:focus-visible,
+.btn-secondary:focus-visible,
+.form-input:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,708 @@
+<div class="admin-dashboard-layout">
+  <!-- Sidebar Navigation -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand text-center">
+      <h2>ZIVORA</h2>
+      <span>Control Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'metrics'" (click)="switchTab('metrics')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <rect x="3" y="3" width="7" height="9" rx="1" />
+          <rect x="14" y="3" width="7" height="5" rx="1" />
+          <rect x="14" y="12" width="7" height="9" rx="1" />
+          <rect x="3" y="16" width="7" height="5" rx="1" />
+        </svg>
+        <span>Overview</span>
+      </button>
+
+      <button class="nav-tab-btn" [class.active]="currentTab === 'categories'" (click)="switchTab('categories')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+          <line x1="4" x2="4" y1="22" y2="15" />
+        </svg>
+        <span>Categories</span>
+      </button>
+
+      <button class="nav-tab-btn" [class.active]="currentTab === 'products'" (click)="switchTab('products')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="m7.5 4.27 9 5.15" />
+          <path
+            d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+          <path d="m3.3 7 8.7 5 8.7-5" />
+          <path d="M12 22V12" />
+        </svg>
+        <span>Products</span>
+      </button>
+
+      <button class="nav-tab-btn" [class.active]="currentTab === 'orders'" (click)="switchTab('orders')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <rect width="16" height="20" x="4" y="2" rx="2" />
+          <line x1="8" x2="16" y1="6" y2="6" />
+          <line x1="8" x2="16" y1="10" y2="10" />
+          <line x1="8" x2="12" y1="14" y2="14" />
+        </svg>
+        <span>Customer Orders</span>
+        <span class="orders-pending-badge" *ngIf="stats && stats.pendingVerifications > 0">
+          {{ stats.pendingVerifications }}
+        </span>
+      </button>
+
+      <button class="nav-tab-btn" [class.active]="currentTab === 'banners'" (click)="switchTab('banners')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+          <circle cx="9" cy="9" r="2" />
+          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+        </svg>
+        <span>Promos & Reviews</span>
+      </button>
+
+      <button class="nav-tab-btn" [class.active]="currentTab === 'settings'" (click)="switchTab('settings')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span>Site Settings</span>
+      </button>
+
+      <button class="nav-tab-btn logout-btn" (click)="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" x2="9" y1="12" y2="12" />
+        </svg>
+        <span>Log Out</span>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main View Area -->
+  <main class="admin-main-viewport">
+    <header class="admin-header-row">
+      <div class="header-tab-title">
+        <h2 style="text-transform: capitalize;">{{ currentTab }} Management</h2>
+        <p>Welcome back, Administrator</p>
+      </div>
+      <div class="admin-header-profile flex-center">
+        <div class="admin-avatar flex-center">A</div>
+        <span>System Admin</span>
+      </div>
+    </header>
+
+    <div class="admin-content-card">
+      <!-- PANEL 1: OVERVIEW METRICS -->
+      <div *ngIf="currentTab === 'metrics'">
+        <div class="metrics-summary-grid" *ngIf="stats">
+          <div class="metric-summary-card">
+            <h4>Total Revenue</h4>
+            <div class="metric-value">₹{{ stats.totalRevenue | number:'1.0-0' }}</div>
+            <p>From manual UPI orders</p>
+          </div>
+          <div class="metric-summary-card">
+            <h4>Total Orders</h4>
+            <div class="metric-value">{{ stats.totalOrders }}</div>
+            <p>Lifetime client orders</p>
+          </div>
+          <div class="metric-summary-card alert">
+            <h4>Pending Payments</h4>
+            <div class="metric-value">{{ stats.pendingVerifications }}</div>
+            <p>Verification reviews required</p>
+          </div>
+          <div class="metric-summary-card">
+            <h4>Active Catalog</h4>
+            <div class="metric-value">{{ stats.totalProducts }}</div>
+            <p>Across {{ stats.totalCategories }} active categories</p>
+          </div>
+        </div>
+
+        <div class="recent-alerts-section luxury-card mt-32">
+          <h3>Quick Action Tasks</h3>
+          <p class="description" style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+            Items requiring immediate verification (manual payments waiting screenshot approvals):
+          </p>
+
+          <button (click)="switchTab('orders')" class="btn-premium" style="margin-top: 10px;">
+            Go to Orders Panel
+          </button>
+        </div>
+      </div>
+
+      <!-- PANEL 2: CATEGORIES CRUD -->
+      <div *ngIf="currentTab === 'categories'">
+        <div class="panel-actions-row">
+          <button class="btn-premium" (click)="openAddCategory()">+ Add Category</button>
+        </div>
+
+        <!-- Add/Edit form overlay -->
+        <div class="admin-modal-overlay" *ngIf="selectedCategory">
+          <div class="admin-form-card luxury-card">
+            <h3>{{ selectedCategory._id ? 'Edit' : 'Create' }} Category</h3>
+            <form (submit)="saveCategory()">
+              <div class="form-group">
+                <label class="form-label">Category Name *</label>
+                <input type="text" required [(ngModel)]="selectedCategory.name" name="catName" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Slug (Optional - auto-generated)</label>
+                <input type="text" [(ngModel)]="selectedCategory.slug" name="catSlug" class="form-input"
+                  placeholder="return-gifts-for-kids" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Display Order (Sorting weight)</label>
+                <input type="number" required [(ngModel)]="selectedCategory.displayOrder" name="catOrder"
+                  class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea [(ngModel)]="selectedCategory.description" name="catDesc" class="form-input"
+                  rows="3"></textarea>
+              </div>
+
+              <!-- Upload banner -->
+              <div class="form-group">
+                <label class="form-label">Category Banner/Image</label>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                  <img [src]="getImageUrl(selectedCategory.image)"
+                    style="width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius-sm);" />
+                  <input type="file" (change)="onUploadFile($event, 'category')" accept="image/*" class="form-input"
+                    style="padding: 8px;" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <input type="checkbox" [(ngModel)]="selectedCategory.isActive" name="catActive" />
+                  Active (Show on catalog storefront)
+                </label>
+              </div>
+
+              <div class="form-modal-footer">
+                <button type="button" class="btn-secondary" (click)="selectedCategory = null">Cancel</button>
+                <button type="submit" class="btn-premium" [disabled]="uploadingImage">Save Category</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Thumbnail</th>
+                <th>Category Name</th>
+                <th>Slug</th>
+                <th>Order Weight</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cat of categories">
+                <td>
+                  <img [src]="getImageUrl(cat.image)"
+                    style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm);" />
+                </td>
+                <td style="font-weight: 600;">{{ cat.name }}</td>
+                <td><code>{{ cat.slug }}</code></td>
+                <td>{{ cat.displayOrder }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="cat.isActive" [class.badge-danger]="!cat.isActive">
+                    {{ cat.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn-secondary" style="padding: 6px 12px; font-size: 11px;"
+                      (click)="openEditCategory(cat)">Edit</button>
+                    <button class="btn-secondary"
+                      style="padding: 6px 12px; font-size: 11px; color: var(--danger-color); border-color: var(--danger-color);"
+                      (click)="deleteCategory(cat._id!)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PANEL 3: PRODUCTS CRUD -->
+      <div *ngIf="currentTab === 'products'">
+        <div class="panel-actions-row">
+          <button class="btn-premium" (click)="openAddProduct()">+ Add Product</button>
+        </div>
+
+        <!-- Add/Edit Modal overlay -->
+        <div class="admin-modal-overlay" *ngIf="selectedProduct">
+          <div class="admin-form-card luxury-card" style="max-width: 600px;">
+            <h3>{{ selectedProduct._id ? 'Edit' : 'Create' }} Product</h3>
+            <form (submit)="saveProduct()">
+              <div class="form-grid-two">
+                <div class="form-group">
+                  <label class="form-label">Product Name *</label>
+                  <input type="text" required [(ngModel)]="selectedProduct.name" name="prodName" class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">SKU Reference *</label>
+                  <input type="text" required [(ngModel)]="selectedProduct.sku" name="prodSku" class="form-input"
+                    placeholder="ZIV-WOOD-001" />
+                </div>
+              </div>
+
+              <div class="form-grid-two">
+                <div class="form-group">
+                  <label class="form-label">Regular Price (INR) *</label>
+                  <input type="number" required [(ngModel)]="selectedProduct.price" name="prodPrice"
+                    class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Discount Price (INR)</label>
+                  <input type="number" [(ngModel)]="selectedProduct.discountPrice" name="prodDisc" class="form-input" />
+                </div>
+              </div>
+
+              <div class="form-grid-two">
+                <div class="form-group">
+                  <label class="form-label">Available Inventory *</label>
+                  <input type="number" required [(ngModel)]="selectedProduct.stock" name="prodStock"
+                    class="form-input" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category *</label>
+                  <select required [(ngModel)]="selectedProduct.categoryId" name="prodCat" class="form-input">
+                    <option value="" disabled>Select category</option>
+                    <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Short Description</label>
+                <input type="text" [(ngModel)]="selectedProduct.shortDescription" name="prodShort" class="form-input"
+                  placeholder="Brief summary of gift card details" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Full Description</label>
+                <textarea [(ngModel)]="selectedProduct.description" name="prodDesc" class="form-input"
+                  rows="3"></textarea>
+              </div>
+
+              <!-- Product thumbnail -->
+              <div class="form-group">
+                <label class="form-label">Product Thumbnail</label>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                  <img [src]="getImageUrl(selectedProduct.thumbnail)"
+                    style="width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius-sm);" />
+                  <input type="file" (change)="onUploadFile($event, 'product')" accept="image/*" class="form-input"
+                    style="padding: 8px;" />
+                </div>
+              </div>
+
+              <!-- Badges configurations -->
+              <div class="form-grid-three" style="grid-template-columns: repeat(3, 1fr); margin-top: 10px;">
+                <div class="form-group">
+                  <label class="form-label">
+                    <input type="checkbox" [(ngModel)]="selectedProduct.featured" name="prodFeat" />
+                    Featured
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <input type="checkbox" [(ngModel)]="selectedProduct.newArrival" name="prodNew" />
+                    New Arrival
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <input type="checkbox" [(ngModel)]="selectedProduct.bestSeller" name="prodBest" />
+                    Bestseller
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <input type="checkbox" [(ngModel)]="selectedProduct.isActive" name="prodActive" />
+                  Active (Show in public catalog)
+                </label>
+              </div>
+
+              <div class="form-modal-footer">
+                <button type="button" class="btn-secondary" (click)="selectedProduct = null">Cancel</button>
+                <button type="submit" class="btn-premium" [disabled]="uploadingImage">Save Product</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Products table list -->
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Thumbnail</th>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price (INR)</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prod of products">
+                <td>
+                  <img [src]="getImageUrl(prod.thumbnail)"
+                    style="width: 44px; height: 44px; object-fit: cover; border-radius: var(--radius-sm);" />
+                </td>
+                <td><code>{{ prod.sku }}</code></td>
+                <td style="font-weight: 600;">{{ prod.name }}</td>
+                <td>{{ getCategoryName(prod.categoryId) }}</td>
+                <td>
+                  ₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}
+                  <span style="font-size: 11px; text-decoration: line-through; color: var(--text-muted);"
+                    *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                    ₹{{ prod.price }}
+                  </span>
+                </td>
+                <td>
+                  <span [class.badge-danger]="prod.stock <= 5" style="font-weight: 600;">{{ prod.stock }}</span>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-success]="prod.isActive" [class.badge-danger]="!prod.isActive">
+                    {{ prod.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 8px;">
+                    <button class="btn-secondary" style="padding: 6px 12px; font-size: 11px;"
+                      (click)="openEditProduct(prod)">Edit</button>
+                    <button class="btn-secondary"
+                      style="padding: 6px 12px; font-size: 11px; color: var(--danger-color); border-color: var(--danger-color);"
+                      (click)="deleteProduct(prod._id!)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PANEL 4: CUSTOMER ORDERS -->
+      <div *ngIf="currentTab === 'orders'">
+        <!-- View details overlay modal -->
+        <div class="admin-modal-overlay" *ngIf="selectedOrder">
+          <div class="admin-form-card luxury-card" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;">
+              <h3>Order details #{{ selectedOrder._id }}</h3>
+              <button class="mobile-close-filters-btn" (click)="closeOrderDetails()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" x2="6" y1="6" y2="18" />
+                  <line x1="6" x2="18" y1="6" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="order-detail-modal-grid">
+              <div class="order-modal-info">
+                <h4>Customer Details</h4>
+                <p>Name: <strong>{{ selectedOrder.customerDetails.name }}</strong></p>
+                <p>Mobile: <strong>{{ selectedOrder.customerDetails.mobile }}</strong></p>
+                <p>Email: <strong>{{ selectedOrder.customerDetails.email }}</strong></p>
+                <p style="margin-top: 10px;">Order Notes: <em>{{ selectedOrder.notes || 'None' }}</em></p>
+
+                <h4 style="margin-top: 20px;">Shipping Address</h4>
+                <p>
+                  {{ selectedOrder.shippingAddress.addressLine1 }},<br />
+                  <span *ngIf="selectedOrder.shippingAddress.addressLine2">{{ selectedOrder.shippingAddress.addressLine2
+                    }},<br /></span>
+                  {{ selectedOrder.shippingAddress.city }}, {{ selectedOrder.shippingAddress.state }} - <strong>{{
+                    selectedOrder.shippingAddress.pincode }}</strong><br />
+                  <span *ngIf="selectedOrder.shippingAddress.landmark">Landmark: {{
+                    selectedOrder.shippingAddress.landmark }}</span>
+                </p>
+
+                <h4 style="margin-top: 20px;">Verification Actions</h4>
+                <!-- Payment verification buttons -->
+                <div *ngIf="selectedOrder.paymentStatus === 'Pending Verification'"
+                  style="display: flex; gap: 10px; margin-top: 10px;">
+                  <button class="btn-premium"
+                    style="background-color: var(--success-color); border-color: var(--success-color);"
+                    (click)="verifyPayment('Paid')">Verify Paid</button>
+                  <button class="btn-premium"
+                    style="background-color: var(--danger-color); border-color: var(--danger-color);"
+                    (click)="verifyPayment('Rejected')">Reject Payment</button>
+                </div>
+                <div *ngIf="selectedOrder.paymentStatus !== 'Pending Verification'" style="margin-top: 10px;">
+                  <span class="badge" [class.badge-success]="selectedOrder.paymentStatus === 'Paid'"
+                    [class.badge-danger]="selectedOrder.paymentStatus === 'Rejected'">
+                    Payment {{ selectedOrder.paymentStatus }}
+                  </span>
+                </div>
+
+                <h4 style="margin-top: 20px;">Shipping Status Update</h4>
+                <div style="display: flex; gap: 12px; align-items: center; margin-top: 10px;">
+                  <select [ngModel]="selectedOrder.orderStatus" (ngModelChange)="updateOrderStatus($event)"
+                    class="form-input" style="max-width: 200px; padding: 8px 12px;">
+                    <option value="Pending">Pending</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Screenshot view -->
+              <div class="order-modal-receipt-side">
+                <h4>Payment Screenshot Receipt</h4>
+                <div class="receipt-preview-box text-center" *ngIf="selectedOrder.paymentScreenshot">
+                  <img [src]="getImageUrl(selectedOrder.paymentScreenshot)" alt="Payment receipt receipt"
+                    (click)="openZoomImage(selectedOrder.paymentScreenshot)"
+                    style="cursor: zoom-in; max-width: 100%; border: 1px solid var(--border-color); border-radius: var(--radius-sm);" />
+                  <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 6px;">Click
+                    screenshot image to zoom</span>
+                </div>
+                <div class="receipt-preview-box flex-center" *ngIf="!selectedOrder.paymentScreenshot"
+                  style="border: 1px dashed var(--border-color); height: 200px; color: var(--text-muted);">
+                  No receipt screenshot uploaded
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Order Ref ID</th>
+                <th>Customer Name</th>
+                <th>Total Value</th>
+                <th>Payment Status</th>
+                <th>Shipping Status</th>
+                <th>Placed Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of orders">
+                <td><code>{{ order._id }}</code></td>
+                <td style="font-weight: 600;">{{ order.customerDetails.name }}</td>
+                <td style="font-weight: 500; color: var(--primary-color);">₹{{ order.totalAmount }}</td>
+                <td>
+                  <span class="badge" [class.badge-warning]="order.paymentStatus === 'Pending Verification'"
+                    [class.badge-success]="order.paymentStatus === 'Paid'"
+                    [class.badge-danger]="order.paymentStatus === 'Rejected'">
+                    {{ order.paymentStatus }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [class.badge-primary]="order.orderStatus === 'Pending'"
+                    [class.badge-gold]="order.orderStatus === 'Shipped'"
+                    [class.badge-success]="order.orderStatus === 'Delivered'"
+                    [class.badge-danger]="order.orderStatus === 'Cancelled'">
+                    {{ order.orderStatus }}
+                  </span>
+                </td>
+                <td>{{ order.createdAt | date:'short' }}</td>
+                <td>
+                  <button class="btn-secondary" style="padding: 6px 12px; font-size: 11px;"
+                    (click)="openOrderDetails(order)">Review Details</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PANEL 5: PROMOS & REVIEWS -->
+      <div *ngIf="currentTab === 'banners'">
+        <div class="banners-admin-split-layout">
+          <!-- Banners section -->
+          <div class="banners-column luxury-card">
+            <h3>Manage Promo Banners</h3>
+            <form (submit)="saveBanner()"
+              style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
+              <div class="form-group">
+                <label class="form-label">Banner Title *</label>
+                <input type="text" [(ngModel)]="newBanner.title" name="banTitle" class="form-input"
+                  placeholder="e.g. Royal Bridal Sale" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Redirect Link (slug or URL)</label>
+                <input type="text" [(ngModel)]="newBanner.redirectLink" name="banLink" class="form-input"
+                  placeholder="e.g. /shop?category=wooden" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Banner Image *</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <img *ngIf="newBanner.image" [src]="getImageUrl(newBanner.image)"
+                    style="width: 50px; height: 50px; object-fit: cover;" />
+                  <input type="file" (change)="onUploadFile($event, 'banner')" accept="image/*" class="form-input"
+                    style="padding: 8px;" />
+                </div>
+              </div>
+              <button type="submit" class="btn-premium" style="width: 100%; margin-top: 10px;">Save Banner</button>
+            </form>
+
+            <h4>Current Active Banners</h4>
+            <div class="banners-list-dashboard"
+              style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+              <div *ngFor="let ban of banners" class="banner-item-card flex-center"
+                style="justify-content: flex-start; gap: 12px; border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-sm);">
+                <img [src]="getImageUrl(ban.image)"
+                  style="width: 60px; height: 44px; object-fit: cover; border-radius: var(--radius-sm);" />
+                <div>
+                  <h5 style="font-family: var(--font-sans); font-size: 13px; font-weight: 600;">{{ ban.title }}</h5>
+                  <span style="font-size: 11px; color: var(--text-muted);">{{ ban.redirectLink || 'No Link' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial section -->
+          <div class="testimonials-column luxury-card">
+            <h3>Manage Testimonial Reviews</h3>
+            <form (submit)="saveTestimonial()"
+              style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
+              <div class="form-group">
+                <label class="form-label">Customer Name *</label>
+                <input type="text" [(ngModel)]="newTestimonial.customerName" name="testName" class="form-input"
+                  placeholder="e.g. Aditi Sharma" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Rating Stars (1-5)</label>
+                <select [(ngModel)]="newTestimonial.rating" name="testRating" class="form-input">
+                  <option [value]="5">5 Stars</option>
+                  <option [value]="4">4 Stars</option>
+                  <option [value]="3">3 Stars</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Review comments *</label>
+                <textarea [(ngModel)]="newTestimonial.review" name="testReview" class="form-input" rows="2"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Customer Photo</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                  <img *ngIf="newTestimonial.image" [src]="getImageUrl(newTestimonial.image)"
+                    style="width: 40px; height: 40px; border-radius: var(--radius-full);" />
+                  <input type="file" (change)="onUploadFile($event, 'testimonial')" accept="image/*" class="form-input"
+                    style="padding: 8px;" />
+                </div>
+              </div>
+              <button type="submit" class="btn-premium" style="width: 100%; margin-top: 10px;">Save Review</button>
+            </form>
+
+            <h4>Testimonies list</h4>
+            <div class="testimonies-list-dashboard"
+              style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+              <div *ngFor="let test of testimonials" class="testimonial-item-card"
+                style="border: 1px solid var(--border-color); padding: 10px; border-radius: var(--radius-sm);">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <img [src]="getImageUrl(test.image)"
+                    style="width: 32px; height: 32px; border-radius: var(--radius-full);" />
+                  <h5 style="font-family: var(--font-sans); font-size: 13px; font-weight: 600;">{{ test.customerName }}
+                  </h5>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px; font-style: italic;">"{{
+                  test.review }}"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL 6: SITE SETTINGS -->
+      <div *ngIf="currentTab === 'settings'">
+        <form (submit)="saveSettings()" class="settings-admin-form" *ngIf="settings">
+          <h3 class="section-title">Company Profile Details</h3>
+
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label class="form-label">Company Name *</label>
+              <input type="text" required [(ngModel)]="settings.companyName" name="compName" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Support Email *</label>
+              <input type="email" required [(ngModel)]="settings.email" name="compEmail" class="form-input" />
+            </div>
+          </div>
+
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label class="form-label">Contact Mobile Number *</label>
+              <input type="text" required [(ngModel)]="settings.contactNumber" name="compPhone" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Physical Store Address *</label>
+              <input type="text" required [(ngModel)]="settings.address" name="compAddress" class="form-input" />
+            </div>
+          </div>
+
+          <h3 class="section-title mt-32">UPI Gateway Details (Checkout manual payment parameters)</h3>
+
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label class="form-label">Company UPI ID VPA *</label>
+              <input type="text" required [(ngModel)]="settings.upiId" name="compUpi" class="form-input"
+                placeholder="zivora@okaxis" />
+            </div>
+
+            <!-- Upload QR Code image -->
+            <div class="form-group">
+              <label class="form-label">UPI QR Code Scanner Image</label>
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <img [src]="getImageUrl(settings.upiQrCode)"
+                  style="width: 80px; height: 80px; object-fit: contain; border: 1px solid var(--border-color);" />
+                <input type="file" (change)="onUploadFile($event, 'settingsQr')" accept="image/*" class="form-input"
+                  style="padding: 8px;" />
+              </div>
+            </div>
+          </div>
+
+          <h3 class="section-title mt-32">Social Media Links</h3>
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label class="form-label">Instagram Page</label>
+              <input type="text" [(ngModel)]="settings.socialMediaLinks.instagram" name="compInsta"
+                class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Facebook Page</label>
+              <input type="text" [(ngModel)]="settings.socialMediaLinks.facebook" name="compFb" class="form-input" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-premium save-settings-submit-btn"
+            style="margin-top: 20px; width: 200px;">Save Configuration</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal: ZOOM PREVIEW SCREENSHOT OVERLAY -->
+<div class="zoom-image-overlay flex-center" *ngIf="zoomImageSrc" (click)="closeZoomImage()">
+  <div class="zoom-image-content" (click)="$event.stopPropagation()">
+    <img [src]="getImageUrl(zoomImageSrc)" alt="receipt Zoom View" />
+    <button class="zoom-close-btn" (click)="closeZoomImage()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" x2="6" y1="6" y2="18" />
+        <line x1="6" x2="18" y1="6" y2="18" />
+      </svg>
+    </button>
+  </div>
+</div>

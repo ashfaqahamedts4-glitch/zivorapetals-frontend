@@ -1,0 +1,400 @@
+<div class="home-page">
+  <!-- Loading state -->
+  <div class="storefront-loader-container" *ngIf="loading">
+    <div class="luxury-spinner"></div>
+    <p class="loading-text">Crafting luxury returns for your moments...</p>
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <!-- Hero Slider -->
+    <section class="hero-section">
+      <div class="banner-slider" *ngIf="banners.length > 0; else heroFallback">
+        <div *ngFor="let banner of banners; let idx = index" class="banner-slide" [class.active]="idx === activeBanner"
+          [style.backgroundImage]="'linear-gradient(rgba(45, 31, 34, 0.4), rgba(45, 31, 34, 0.65)), url(' + getImageUrl(banner.image) + ')'">
+          <div class="container banner-content">
+            <h2 class="banner-title">{{ banner.title }}</h2>
+            <p class="banner-description">
+              Exquisite hand-crafted return gifts and floral petals curated for premium occasions.
+            </p>
+            <div class="banner-actions">
+              <a [routerLink]="banner.redirectLink || '/shop'" class="btn-gold">
+                Explore Collection
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slider Controls -->
+        <ng-container *ngIf="banners.length > 1">
+          <button class="slider-arrow arrow-left" (click)="prevBanner()" aria-label="Previous slide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button class="slider-arrow arrow-right" (click)="nextBanner()" aria-label="Next slide">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <div class="slider-dots">
+            <button *ngFor="let banner of banners; let idx = index" class="slider-dot"
+              [class.active]="idx === activeBanner" (click)="setBanner(idx)"
+              [attr.aria-label]="'Go to slide ' + (idx + 1)"></button>
+          </div>
+        </ng-container>
+      </div>
+
+      <ng-template #heroFallback>
+        <div class="hero-fallback flex-center">
+          <div class="container text-center">
+            <h2 class="hero-title">Zivora Petals</h2>
+            <p class="hero-desc">Elegant Hand-Crafted Return Gifts for Your Cherished Celebrations</p>
+            <a routerLink="/shop" class="btn-gold">Shop All Products</a>
+          </div>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- Collections Categories Grid -->
+    <section class="home-section categories-section" *ngIf="categories.length > 0">
+      <div class="container">
+        <h2 class="luxury-heading">Explore Collections</h2>
+        <div class="categories-grid">
+          <a *ngFor="let cat of categories" [routerLink]="['/shop']" [queryParams]="{ category: cat._id }"
+            class="category-card-circle">
+            <div class="circle-image-container">
+              <img [src]="getImageUrl(cat.image)" [alt]="cat.name"
+                (error)="onImageError($event, 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?q=80&w=200&auto=format&fit=crop')" />
+              <div class="circle-overlay flex-center">
+                <span class="circle-overlay-text">View Catalog</span>
+              </div>
+            </div>
+            <h3>{{ cat.name }}</h3>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Curated Masterpieces (Featured Products) -->
+    <section class="home-section products-section">
+      <div class="container">
+        <h2 class="luxury-heading">Curated Masterpieces</h2>
+        <div class="products-grid" *ngIf="featuredProducts.length > 0; else emptyFeatured">
+          <div *ngFor="let prod of featuredProducts" class="product-card luxury-card">
+            <a [routerLink]="['/product', prod.slug]" class="product-card-link">
+              <div class="product-card-img">
+                <img [src]="getImageUrl(prod.thumbnail)" [alt]="prod.name"
+                  (error)="onImageError($event, 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=300&auto=format&fit=crop')" />
+                <span class="product-badge badge-gold" *ngIf="prod.newArrival">New</span>
+                <span class="product-badge badge-danger" *ngIf="prod.stock <= 5 && prod.stock > 0">Low Stock</span>
+                <span class="product-badge badge-dark" *ngIf="prod.stock === 0">Sold Out</span>
+              </div>
+              <div class="product-card-info">
+                <span class="product-sku">{{ prod.sku }}</span>
+                <h3>{{ prod.name }}</h3>
+                <p class="product-short-desc">{{ prod.shortDescription }}</p>
+                <div class="product-price-block">
+                  <span class="current-price">
+                    ₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}
+                  </span>
+                  <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                    ₹{{ prod.price }}
+                  </span>
+                </div>
+              </div>
+            </a>
+            <button class="btn-premium add-to-bag-btn" (click)="addToBag(prod)" [disabled]="prod.stock === 0">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                style="margin-right: 8px;">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+              </svg>
+              <span>Add To Bag</span>
+            </button>
+          </div>
+        </div>
+
+        <ng-template #emptyFeatured>
+          <div class="empty-catalog text-center">
+            <p>No featured products found. Check back soon!</p>
+          </div>
+        </ng-template>
+
+        <div class="text-center mt-48">
+          <a routerLink="/shop" class="btn-secondary">
+            View Entire Collection
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="home-section why-us-section">
+      <div class="container">
+        <h2 class="luxury-heading">The Zivora Signature</h2>
+        <div class="why-us-grid">
+          <div class="why-us-card text-center">
+            <div class="why-us-icon-container flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" />
+                <circle cx="12" cy="8" r="6" />
+              </svg>
+            </div>
+            <h3>Exquisite Artistry</h3>
+            <p>Each gift is handcrafted by master artisans, showcasing intricate patterns and unparalleled attention to
+              detail.</p>
+          </div>
+
+          <div class="why-us-card text-center">
+            <div class="why-us-icon-container flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+              </svg>
+            </div>
+            <h3>Curated Collections</h3>
+            <p>Thoughtfully selected return gifts that reflect elegance, expressing gratitude to your guests with luxury
+              styles.</p>
+          </div>
+
+          <div class="why-us-card text-center">
+            <div class="why-us-icon-container flex-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <h3>Bespoke Presentation</h3>
+            <p>All items are dressed in premium Zivora ribbon-tied luxury boxes, creating a memorable unboxing
+              experience.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="home-section testimonials-section" *ngIf="testimonials.length > 0">
+      <div class="container">
+        <h2 class="luxury-heading">Cherished Reviews</h2>
+        <div class="testimonials-grid">
+          <div *ngFor="let test of testimonials" class="testimonial-card luxury-card">
+            <div class="testimonial-stars">
+              <svg *ngFor="let star of getRatingArray(test.rating)" xmlns="http://www.w3.org/2000/svg" width="16"
+                height="16" viewBox="0 0 24 24" fill="var(--accent-color)" stroke="var(--accent-color)"
+                stroke-width="2">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <p class="testimonial-text">"{{ test.review }}"</p>
+            <div class="testimonial-client">
+              <div class="client-avatar">
+                <img
+                  [src]="getImageUrl(test.image, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop')"
+                  [alt]="test.customerName"
+                  (error)="onImageError($event, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop')" />
+              </div>
+              <h4>{{ test.customerName }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="home-section brand-details-section" id="about">
+      <div class="container brand-details-grid">
+        <div class="brand-image-block">
+          <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=600&auto=format&fit=crop"
+            alt="Floral Return Gifts Crafting" />
+        </div>
+        <div class="brand-text-block">
+          <h3>Crafting Memories, Petal by Petal</h3>
+          <p>
+            At <strong>Zivora Petals</strong>, we believe that gratitude is the ultimate luxury.
+            Our return gift collections are meticulously designed to stand as a legacy of your special day.
+            From intricate handcrafted wooden jewel trunks to floral-themed silver carvings, we redefine the art of
+            gift-giving.
+          </p>
+          <p>
+            Whether it is a royal wedding, a grand milestone birthday, or a corporate gala, our curations speak
+            a language of status and refined taste. Standard packaging is elevated with custom velvet pouching and
+            rosewater spray to impress the senses.
+          </p>
+          <a routerLink="/shop" class="btn-premium">
+            Shop The Legacy
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact & Atelier Section -->
+    <section class="home-section contact-section" id="contact">
+      <div class="container contact-grid">
+        <!-- Contact Information Info Card -->
+        <div class="contact-info-block">
+          <span class="gold-subtitle">Design Concierge</span>
+          <h2 class="contact-title">Let's Create Together</h2>
+          <p class="contact-description">
+            Whether you are planning a grand royal wedding, a corporate gala, or an intimate celebration,
+            our design concierge is here to customize your return gifts to perfection.
+          </p>
+
+          <div class="contact-info-list">
+            <div class="contact-info-item">
+              <div class="contact-icon flex-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </div>
+              <div>
+                <h4>Call or WhatsApp</h4>
+                <p>+91 98765 43210 (Mon-Sat, 9AM - 7PM)</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-icon flex-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              </div>
+              <div>
+                <h4>Corporate & Concierge Inquiries</h4>
+                <p>concierge@zivorapetals.com</p>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-icon flex-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+              </div>
+              <div>
+                <h4>Visit Our Experience Atelier</h4>
+                <p>12/A, Golden Petals Mansion, MG Road, Bangalore, KA - 560001</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consultation Form Card -->
+        <div class="contact-form-block luxury-card">
+          <h3>Request a Consultation</h3>
+          <p>Tell us about your event, and our concierge team will reach out with customized catalogs.</p>
+
+          <form (submit)="submitContactForm()" class="contact-form">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
+              <input type="text" required [(ngModel)]="contactModel.name" name="name" class="form-input"
+                placeholder="e.g. Meera Patel" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address *</label>
+              <input type="email" required [(ngModel)]="contactModel.email" name="email" class="form-input"
+                placeholder="e.g. meera@gmail.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Event Occasion (Optional)</label>
+              <input type="text" [(ngModel)]="contactModel.subject" name="subject" class="form-input"
+                placeholder="e.g. Wedding Reception, Silver Anniversary" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Bespoke Requirements *</label>
+              <textarea required [(ngModel)]="contactModel.message" name="message" class="form-input" rows="4"
+                placeholder="Briefly specify guest count, gift budget, or specific styles needed..."></textarea>
+            </div>
+            <button type="submit" class="btn-premium" style="width: 100%;" [disabled]="sendingContact">
+              <span *ngIf="!sendingContact">Send Inquiry</span>
+              <span *ngIf="sendingContact">Submitting Request...</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Storefront Footer Section -->
+    <footer class="storefront-footer">
+      <div class="container footer-grid">
+        <div class="footer-brand-info">
+          <div style="margin-bottom: 16px;">
+            <app-logo [width]="160" [height]="45" textColor="#ffffff" bowColor="#C5A880"></app-logo>
+          </div>
+          <p>
+            Curating and crafting standard-redefining return gifts, hampers, and memoirs for your life's milestone
+            celebrations.
+          </p>
+          <div class="footer-social-links">
+            <a href="https://instagram.com" target="_blank" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+              </svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="https://pinterest.com" target="_blank" aria-label="Pinterest">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" x2="12" y1="2" y2="15" />
+                <circle cx="12" cy="18" r="4" />
+                <path d="M12 2a10 10 0 1 0 10 10H12z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a routerLink="/">Home</a></li>
+            <li><a routerLink="/shop">Shop Collection</a></li>
+            <li><a routerLink="/" fragment="about">About Our Atelier</a></li>
+            <li><a routerLink="/" fragment="contact">Contact Concierge</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Secure Experience</h4>
+          <ul>
+            <li><a routerLink="/admin/login">Admin Dashboard</a></li>
+            <li>
+              <p>Verified manual UPI payments</p>
+            </li>
+            <li>
+              <p>Tide and bow-tied packaging standard</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom-row">
+        <div class="container flex-center" style="justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+          <p class="copyright-text">&copy; 2026 Zivora Petals Return Gifts. All Rights Reserved.</p>
+          <p class="atelier-text">Crafted with status & legacy in Bangalore, India.</p>
+        </div>
+      </div>
+    </footer>
+  </ng-container>
+</div>
