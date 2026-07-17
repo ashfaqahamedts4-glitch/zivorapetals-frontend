@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ApiResponseWrapper<T> {
   success?: boolean;
@@ -20,7 +21,7 @@ export interface ApiResponseWrapper<T> {
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:3000/api';
+  private readonly baseUrl = environment.apiBaseUrl;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -175,6 +176,6 @@ export function getImageUrl(path?: any, fallback = 'https://images.unsplash.com/
 
   if (typeof path !== 'string') return fallback;
   if (path.startsWith('http')) return path;
-  return `http://localhost:3000${path}`;
+  return `${environment.backendUrl}${path}`;
 }
 
