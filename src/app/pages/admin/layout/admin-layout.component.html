@@ -21,7 +21,7 @@
         <span>Overview</span>
       </button>
 
-      <button class="nav-tab-btn" [class.active]="currentTab === 'categories'" (click)="switchTab('categories')">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'categories'" (click)="switchTab('categories'); isSidebarOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
@@ -30,7 +30,7 @@
         <span>Categories</span>
       </button>
 
-      <button class="nav-tab-btn" [class.active]="currentTab === 'products'" (click)="switchTab('products')">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'products'" (click)="switchTab('products'); isSidebarOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <path d="m7.5 4.27 9 5.15" />
@@ -42,7 +42,7 @@
         <span>Products</span>
       </button>
 
-      <button class="nav-tab-btn" [class.active]="currentTab === 'orders'" (click)="switchTab('orders')">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'orders'" (click)="switchTab('orders'); isSidebarOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <rect width="16" height="20" x="4" y="2" rx="2" />
@@ -56,7 +56,7 @@
         </span>
       </button>
 
-      <button class="nav-tab-btn" [class.active]="currentTab === 'banners'" (click)="switchTab('banners')">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'banners'" (click)="switchTab('banners'); isSidebarOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
@@ -66,7 +66,7 @@
         <span>Promos & Reviews</span>
       </button>
 
-      <button class="nav-tab-btn" [class.active]="currentTab === 'settings'" (click)="switchTab('settings')">
+      <button class="nav-tab-btn" [class.active]="currentTab === 'settings'" (click)="switchTab('settings'); isSidebarOpen = false">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sidebar-icon">
           <circle cx="12" cy="12" r="3" />

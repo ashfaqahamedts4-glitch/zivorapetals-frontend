@@ -1385,9 +1385,10 @@
     font-size: 20px;
   }
 
-  /* Hide secondary header text on small screens */
+  /* Show subtitle on mobile — 'Welcome back, Administrator' */
   .header-tab-title p {
-    display: none;
+    display: block;
+    font-size: 11px;
   }
 
   .admin-header-profile span {
@@ -1491,8 +1492,30 @@
 }
 
 @media (max-width: 480px) {
+
+  /* Horizontally scrollable cards row — swipe left/right */
   .metrics-summary-grid {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 12px;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* hide scrollbar Firefox */
+  }
+
+  .metrics-summary-grid::-webkit-scrollbar {
+    display: none;
+    /* hide scrollbar Chrome/Safari */
+  }
+
+  .metric-summary-card {
+    min-width: 160px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
   }
 
   .sidebar-brand h2 {

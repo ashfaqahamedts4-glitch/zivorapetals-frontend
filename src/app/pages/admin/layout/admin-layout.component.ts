@@ -734,6 +734,7 @@ export class AdminLayoutComponent implements OnInit {
         }
         this.cartService.showToast('Image uploaded successfully', 'success');
         this.uploadingImage = false;
+        this.cdr.detectChanges(); // Force preview to refresh immediately
       },
       error: (err) => {
         this.cartService.showToast(err.message || 'File upload failed', 'error');
