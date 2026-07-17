@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgIf, NgFor, NgClass, AsyncPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService, ApiResponseWrapper, getImageUrl } from '../../../services/api.service';
@@ -12,6 +12,7 @@ interface DashboardStats {
   totalProducts: number;
   totalCategories: number;
   totalRevenue: number;
+  pendingVerificationOrders?: Order[];
 }
 
 interface Category {
@@ -54,6 +55,7 @@ interface OrderItem {
 
 interface Order {
   _id: string;
+  orderNumber?: string;
   customerDetails: {
     name: string;
     mobile: string;
@@ -108,20 +110,24 @@ interface Settings {
   };
 }
 
+import { ModalComponent } from '../../../shared/modal/modal.component';
+import { DropdownComponent, DropdownOption } from '../../../shared/dropdown/dropdown.component';
+import { DatepickerComponent } from '../../../shared/datepicker/datepicker.component';
+
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [NgIf, NgFor, NgClass, AsyncPipe, FormsModule, DatePipe, DecimalPipe],
+  imports: [NgIf, NgFor, NgClass, AsyncPipe, FormsModule, DatePipe, DecimalPipe, ModalComponent, DropdownComponent, DatepickerComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })
 export class AdminLayoutComponent implements OnInit {
   readonly getImageUrl = getImageUrl;
   currentTab: 'metrics' | 'categories' | 'products' | 'orders' | 'banners' | 'settings' = 'metrics';
-  
+
   // Dashboard Metrics
   stats: DashboardStats | null = null;
-  
+
   // Lists
   categories: Category[] = [];
   products: Product[] = [];
@@ -130,11 +136,36 @@ export class AdminLayoutComponent implements OnInit {
   testimonials: Testimonial[] = [];
   settings: Settings | null = null;
 
+  // Orders pagination and filters
+  orderPage = 1;
+  orderLimit = 10;
+  orderTotal = 0;
+  orderSearch = '';
+  orderStatusFilter = '';
+  orderPaymentStatusFilter = '';
+  orderStartDateFilter = '';
+  orderEndDateFilter = '';
+
+  shippingStatusOptions: DropdownOption[] = [
+    { value: '', label: 'All Shipping Statuses' },
+    { value: 'Pending', label: 'Pending' },
+    { value: 'Shipped', label: 'Shipped' },
+    { value: 'Delivered', label: 'Delivered' },
+    { value: 'Cancelled', label: 'Cancelled' }
+  ];
+
+  paymentStatusOptions: DropdownOption[] = [
+    { value: '', label: 'All Payment Statuses' },
+    { value: 'Pending Verification', label: 'Pending Verification' },
+    { value: 'Paid', label: 'Paid' },
+    { value: 'Rejected', label: 'Rejected' }
+  ];
+
   // Active form models
   selectedCategory: Category | null = null;
   selectedProduct: Product | null = null;
   selectedOrder: Order | null = null;
-  
+
   // Banners & Testimonials models
   newBanner: Banner = { title: '', image: '', redirectLink: '', isActive: true };
   newTestimonial: Testimonial = { customerName: '', review: '', rating: 5, image: '' };
@@ -142,13 +173,18 @@ export class AdminLayoutComponent implements OnInit {
   // File Upload states
   uploadingImage = false;
   zoomImageSrc: string | null = null;
+  isUpdatingPayment = false;
+  isUpdatingStatus = false;
+  // Mobile UI state
+  isSidebarOpen = false;
 
   constructor(
     private readonly apiService: ApiService,
     private readonly cartService: CartService,
     private readonly router: Router,
+    private readonly route: ActivatedRoute,
     private readonly cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     if (!this.apiService.getAdminToken()) {
@@ -156,8 +192,39 @@ export class AdminLayoutComponent implements OnInit {
       return;
     }
 
-    // Load initial metrics tab
-    this.switchTab('metrics');
+    // Set default date range to last 1 month
+    const today = new Date();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(today.getDate() - 30); // 30 days ago
+
+    this.orderStartDateFilter = this.formatDate(oneMonthAgo);
+    this.orderEndDateFilter = this.formatDate(today);
+
+    // Read the query parameter tab to restore state on reload
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      const validTabs = ['metrics', 'categories', 'products', 'orders', 'banners', 'settings'];
+      if (tab && validTabs.includes(tab)) {
+        if (this.currentTab !== tab) {
+          this.switchTab(tab as any);
+        } else {
+          this.loadTabContents(tab as any);
+        }
+      } else {
+        if (this.currentTab !== 'metrics') {
+          this.switchTab('metrics');
+        } else {
+          this.loadTabContents('metrics');
+        }
+      }
+    });
+  }
+
+  private formatDate(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   switchTab(tab: 'metrics' | 'categories' | 'products' | 'orders' | 'banners' | 'settings'): void {
@@ -165,6 +232,17 @@ export class AdminLayoutComponent implements OnInit {
     this.selectedCategory = null;
     this.selectedProduct = null;
 
+    // Update query parameter without page reload
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab },
+      queryParamsHandling: 'merge'
+    });
+
+    this.loadTabContents(tab);
+  }
+
+  loadTabContents(tab: 'metrics' | 'categories' | 'products' | 'orders' | 'banners' | 'settings'): void {
     if (tab === 'metrics') {
       this.loadDashboardStats();
     } else if (tab === 'categories') {
@@ -211,13 +289,155 @@ export class AdminLayoutComponent implements OnInit {
     });
   }
 
-  private loadOrders(): void {
-    this.apiService.get<ApiResponseWrapper<Order[]>>('/admin/orders?limit=100').subscribe({
+  loadOrders(): void {
+    let url = `/admin/orders?page=${this.orderPage}&limit=${this.orderLimit}`;
+    if (this.orderSearch) {
+      url += `&search=${encodeURIComponent(this.orderSearch)}`;
+    }
+    if (this.orderStatusFilter) {
+      url += `&orderStatus=${encodeURIComponent(this.orderStatusFilter)}`;
+    }
+    if (this.orderPaymentStatusFilter) {
+      url += `&paymentStatus=${encodeURIComponent(this.orderPaymentStatusFilter)}`;
+    }
+    if (this.orderStartDateFilter) {
+      url += `&startDate=${encodeURIComponent(this.orderStartDateFilter)}`;
+    }
+    if (this.orderEndDateFilter) {
+      url += `&endDate=${encodeURIComponent(this.orderEndDateFilter)}`;
+    }
+
+    this.apiService.get<any>(url).subscribe({
       next: (res) => {
         this.orders = res.data || [];
+        if (res.pagination) {
+          this.orderTotal = res.pagination.total || 0;
+          this.orderPage = res.pagination.page || 1;
+          this.orderLimit = res.pagination.limit || 10;
+        } else {
+          this.orderTotal = this.orders.length;
+        }
         this.cdr.detectChanges();
       },
+      error: (err) => {
+        this.cartService.showToast(err.message || 'Failed to load orders', 'error');
+        this.cdr.detectChanges();
+      }
     });
+  }
+
+  onOrderSearch(): void {
+    this.orderPage = 1;
+    this.loadOrders();
+  }
+
+  onOrderFilterChange(): void {
+    this.orderPage = 1;
+    this.loadOrders();
+  }
+
+  onOrderPageChange(page: number): void {
+    if (page < 1 || page > this.getTotalOrderPages()) return;
+    this.orderPage = page;
+    this.loadOrders();
+  }
+
+  getTotalOrderPages(): number {
+    return Math.ceil(this.orderTotal / this.orderLimit) || 1;
+  }
+
+  clearOrderFilters(): void {
+    this.orderSearch = '';
+    this.orderStatusFilter = '';
+    this.orderPaymentStatusFilter = '';
+    this.orderStartDateFilter = '';
+    this.orderEndDateFilter = '';
+    this.orderPage = 1;
+    this.loadOrders();
+  }
+
+  exportOrdersToCSV(): void {
+    this.cartService.showToast('Generating CSV export, please wait...', 'info');
+    let url = `/admin/orders?page=1&limit=${this.orderTotal || 1000}`;
+    if (this.orderSearch) {
+      url += `&search=${encodeURIComponent(this.orderSearch)}`;
+    }
+    if (this.orderStatusFilter) {
+      url += `&orderStatus=${encodeURIComponent(this.orderStatusFilter)}`;
+    }
+    if (this.orderPaymentStatusFilter) {
+      url += `&paymentStatus=${encodeURIComponent(this.orderPaymentStatusFilter)}`;
+    }
+    if (this.orderStartDateFilter) {
+      url += `&startDate=${encodeURIComponent(this.orderStartDateFilter)}`;
+    }
+    if (this.orderEndDateFilter) {
+      url += `&endDate=${encodeURIComponent(this.orderEndDateFilter)}`;
+    }
+
+    this.apiService.get<any>(url).subscribe({
+      next: (res) => {
+        const exportData = res.data || [];
+        if (exportData.length === 0) {
+          this.cartService.showToast('No orders found to export', 'error');
+          return;
+        }
+        this.downloadCSV(exportData);
+      },
+      error: (err) => {
+        this.cartService.showToast(err.message || 'Failed to export orders', 'error');
+      }
+    });
+  }
+
+  downloadCSV(orders: Order[]): void {
+    const headers = [
+      'Order Reference ID',
+      'Customer Name',
+      'Mobile',
+      'Email',
+      'Total Value (INR)',
+      'Payment Status',
+      'Shipping Status',
+      'Placed Date',
+      'Shipping Address',
+      'Product Items'
+    ];
+
+    const rows = orders.map(order => {
+      const addr = order.shippingAddress;
+      const addressStr = `"${addr.addressLine1}${addr.addressLine2 ? ', ' + addr.addressLine2 : ''}, ${addr.city}, ${addr.state} - ${addr.pincode}"`;
+      const itemsStr = `"${order.items.map(item => `${item.name} (${item.sku}) x${item.quantity}`).join('; ')}"`;
+      const placedDate = new Date(order.createdAt).toLocaleString();
+      return [
+        order.orderNumber || order._id,
+        order.customerDetails.name,
+        order.customerDetails.mobile,
+        order.customerDetails.email,
+        order.totalAmount,
+        order.paymentStatus,
+        order.orderStatus,
+        placedDate,
+        addressStr,
+        itemsStr
+      ];
+    });
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', `Zivora_Orders_Export_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.cartService.showToast('CSV report downloaded successfully', 'success');
   }
 
   private loadBanners(): void {
@@ -266,7 +486,7 @@ export class AdminLayoutComponent implements OnInit {
 
   saveCategory(): void {
     if (!this.selectedCategory) return;
-    
+
     // Auto generate slug from name if empty
     if (!this.selectedCategory.slug) {
       this.selectedCategory.slug = this.selectedCategory.name
@@ -387,31 +607,52 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   verifyPayment(status: 'Paid' | 'Rejected'): void {
-    if (!this.selectedOrder) return;
+    if (!this.selectedOrder || this.isUpdatingPayment) return;
+    this.isUpdatingPayment = true;
+    this.cartService.showToast('Processing payment verification and email, please wait...', 'info');
+    this.cdr.detectChanges();
+
     this.apiService
       .post<ApiResponseWrapper<any>>(`/admin/orders/${this.selectedOrder._id}/verify-payment`, { status })
       .subscribe({
         next: (res) => {
+          this.isUpdatingPayment = false;
           this.cartService.showToast(`Payment receipt status updated to: ${status}`, 'success');
-          // Update local modal data
           this.selectedOrder = res.data;
           this.loadOrders();
+          this.loadDashboardStats();
+          this.cdr.detectChanges();
         },
-        error: (err) => this.cartService.showToast(err.message, 'error'),
+        error: (err) => {
+          this.isUpdatingPayment = false;
+          this.cartService.showToast(err.message, 'error');
+          this.cdr.detectChanges();
+        },
       });
   }
 
   updateOrderStatus(status: string): void {
-    if (!this.selectedOrder) return;
+    if (!this.selectedOrder || this.isUpdatingStatus) return;
+    this.isUpdatingStatus = true;
+    this.cartService.showToast('Updating shipping status, please wait...', 'info');
+    this.cdr.detectChanges();
+
     this.apiService
       .patch<ApiResponseWrapper<any>>(`/admin/orders/${this.selectedOrder._id}/status`, { orderStatus: status })
       .subscribe({
         next: (res) => {
+          this.isUpdatingStatus = false;
           this.cartService.showToast(`Shipping order status changed to: ${status}`, 'success');
           this.selectedOrder = res.data;
           this.loadOrders();
+          this.loadDashboardStats();
+          this.cdr.detectChanges();
         },
-        error: (err) => this.cartService.showToast(err.message, 'error'),
+        error: (err) => {
+          this.isUpdatingStatus = false;
+          this.cartService.showToast(err.message, 'error');
+          this.cdr.detectChanges();
+        },
       });
   }
 
@@ -470,7 +711,7 @@ export class AdminLayoutComponent implements OnInit {
     if (!file) return;
 
     this.uploadingImage = true;
-    
+
     // Choose service upload context based on panel
     const upload$ = (type === 'settingsLogo' || type === 'settingsQr' || type === 'category' || type === 'product' || type === 'banner' || type === 'testimonial')
       ? this.apiService.uploadProductImage(file)

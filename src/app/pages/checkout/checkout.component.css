@@ -117,7 +117,8 @@
   margin-bottom: 24px;
 }
 
-.summary-card h3, .upi-payment-card h3 {
+.summary-card h3,
+.upi-payment-card h3 {
   font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -300,6 +301,66 @@
   color: var(--primary-color);
 }
 
+/* Guest Checkout Login Prompt Banner */
+.login-prompt-banner {
+  background-color: var(--primary-soft);
+  border: 1px solid var(--border-color);
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.login-prompt-banner p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.login-prompt-banner a {
+  color: var(--primary-color);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.info-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+/* Success signup prompt styling */
+.success-signup-prompt {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.success-signup-prompt p {
+  font-size: 13px !important;
+  color: var(--text-dark) !important;
+  margin-bottom: 8px !important;
+}
+
+.prompt-link {
+  display: inline-block;
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.prompt-link:hover {
+  opacity: 0.8;
+}
+
 @media (max-width: 992px) {
   .checkout-grid {
     grid-template-columns: 1fr;
@@ -308,7 +369,9 @@
 }
 
 @media (max-width: 480px) {
-  .form-grid-two, .form-grid-three {
+
+  .form-grid-two,
+  .form-grid-three {
     grid-template-columns: 1fr;
   }
 }

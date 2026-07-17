@@ -1087,12 +1087,15 @@
 
 /* Table rows: staggered entrance + sliding hover accent */
 .admin-table tbody tr {
-  position: relative;
   animation: rowFadeIn 0.4s ease backwards;
   transition: background-color 0.2s ease;
 }
 
-.admin-table tbody tr::before {
+.admin-table tbody tr td:first-child {
+  position: relative;
+}
+
+.admin-table tbody tr td:first-child::before {
   content: '';
   position: absolute;
   left: 0;
@@ -1103,7 +1106,7 @@
   transition: width 0.25s ease;
 }
 
-.admin-table tbody tr:hover::before {
+.admin-table tbody tr:hover td:first-child::before {
   width: 3px;
 }
 
@@ -1290,5 +1293,209 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE OPTIMIZATION — hamburger drawer, stacked forms, touch targets
+   ========================================================================== */
+
+/* Hamburger toggle button — hidden on desktop */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  background-color: var(--primary-soft);
+}
+
+.mobile-menu-toggle:active {
+  transform: scale(0.94);
+}
+
+/* Backdrop behind the drawer */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .admin-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sidebar becomes an off-canvas drawer */
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    z-index: 700;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .admin-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 650;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sidebar-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .admin-main-viewport {
+    padding: 20px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .admin-header-row {
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+  }
+
+  .header-tab-title h2 {
+    font-size: 20px;
+  }
+
+  /* Hide secondary header text on small screens */
+  .header-tab-title p {
+    display: none;
+  }
+
+  .admin-header-profile span {
+    display: none;
+  }
+
+  .admin-content-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* Forms collapse to single column */
+  .form-grid-two,
+  .form-grid-three {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Filters bar stacks and goes full width */
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .filters-row .form-group,
+  .filters-row app-dropdown,
+  .filters-row app-datepicker {
+    min-width: 100% !important;
+    width: 100%;
+  }
+
+  .filters-row button {
+    width: 100%;
+  }
+
+  /* Tables: tighter, horizontally scrollable, touch-friendly rows */
+  .admin-table {
+    font-size: 12px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 8px;
+    white-space: nowrap;
+  }
+
+  /* Row action buttons stack instead of sitting side-by-side */
+  .admin-table td div[style*="display: flex"] {
+    flex-direction: column;
+    gap: 6px !important;
+  }
+
+  .admin-table td button,
+  .btn-secondary,
+  .btn-premium {
+    min-height: 40px;
+  }
+
+  /* Modals behave like full-screen sheets */
+  .admin-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .admin-form-card {
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    animation: sheetSlideUp 0.3s ease;
+  }
+
+  @keyframes sheetSlideUp {
+    0% {
+      transform: translateY(100%);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .order-detail-modal-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pagination-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .pagination-row div[style*="display: flex"] {
+    width: 100%;
+  }
+
+  .pagination-row button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .metrics-summary-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .sidebar-brand h2 {
+    font-size: 22px;
   }
 }

@@ -1,0 +1,159 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <h1>Account Settings</h1>
+      <p>Manage your contact details and default shipping address</p>
+    </div>
+
+    <!-- Alert banners -->
+    <div *ngIf="successMessage" class="alert-banner success">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="alert-icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>{{ successMessage }}</span>
+    </div>
+    <div *ngIf="errorMessage" class="alert-banner error">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="alert-icon"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form (submit)="onSubmit($event)" class="profile-form">
+      <!-- Section 1: Contact details -->
+      <div class="form-section">
+        <h3>Contact Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              [(ngModel)]="email" 
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+
+          <div class="form-group" *ngIf="email !== customer?.email">
+            <label for="profilePassword">Confirm with Password</label>
+            <input 
+              type="password" 
+              id="profilePassword" 
+              name="profilePassword"
+              [(ngModel)]="profilePassword" 
+              placeholder="Enter your current password to verify"
+              [required]="email !== customer?.email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              [(ngModel)]="name" 
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="mobile">Mobile Number</label>
+            <input 
+              type="tel" 
+              id="mobile" 
+              name="mobile" 
+              [(ngModel)]="mobile" 
+              placeholder="Enter your mobile number"
+              required
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Default shipping address -->
+      <div class="form-section">
+        <h3>Default Shipping Address</h3>
+        <p class="section-desc">This address will be prefilled automatically at checkout.</p>
+        
+        <div class="form-group full-width">
+          <label for="addressLine1">Address Line 1</label>
+          <input 
+            type="text" 
+            id="addressLine1" 
+            name="addressLine1" 
+            [(ngModel)]="addressLine1" 
+            placeholder="Enter address line 1"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="addressLine2">Address Line 2 (Optional)</label>
+          <input 
+            type="text" 
+            id="addressLine2" 
+            name="addressLine2" 
+            [(ngModel)]="addressLine2" 
+            placeholder="Enter address line 2"
+          />
+        </div>
+
+        <div class="form-grid three-col">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input 
+              type="text" 
+              id="city" 
+              name="city" 
+              [(ngModel)]="city" 
+              placeholder="Enter your city"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="state">State</label>
+            <input 
+              type="text" 
+              id="state" 
+              name="state" 
+              [(ngModel)]="state" 
+              placeholder="Enter your state"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="pincode">Pincode</label>
+            <input 
+              type="text" 
+              id="pincode" 
+              name="pincode" 
+              [(ngModel)]="pincode" 
+              placeholder="Enter your pincode"
+            />
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="landmark">Landmark (Optional)</label>
+          <input 
+            type="text" 
+            id="landmark" 
+            name="landmark" 
+            [(ngModel)]="landmark" 
+            placeholder="Enter your landmark"
+          />
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <a routerLink="/customer/orders" class="back-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" x2="5" y1="12" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to Orders
+        </a>
+        <button type="submit" class="save-btn" [disabled]="loading">
+          <span *ngIf="!loading">Save Changes</span>
+          <span *ngIf="loading" class="spinner"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

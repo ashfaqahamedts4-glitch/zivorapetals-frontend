@@ -4,11 +4,12 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { CartDrawerComponent } from './components/cart-drawer/cart-drawer.component';
 import { CartService } from './services/cart.service';
+import { ToastComponent } from './shared/toast/toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgIf, AsyncPipe, NavbarComponent, CartDrawerComponent],
+  imports: [RouterOutlet, NgIf, AsyncPipe, NavbarComponent, CartDrawerComponent, ToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -18,7 +19,7 @@ export class App {
   constructor(
     public readonly router: Router,
     public readonly cartService: CartService
-  ) {}
+  ) { }
 
   toggleCart(): void {
     this.isCartOpen = !this.isCartOpen;

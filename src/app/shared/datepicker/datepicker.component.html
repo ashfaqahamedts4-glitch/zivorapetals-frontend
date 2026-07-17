@@ -1,0 +1,56 @@
+<div class="datepicker-container">
+  <button type="button" class="datepicker-trigger" (click)="toggleCalendar()" [class.active]="isOpen">
+    <span>{{ displayValue || placeholder }}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="calendar-icon">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  </button>
+  
+  <div class="calendar-popup" *ngIf="isOpen">
+    <!-- Header -->
+    <div class="calendar-header">
+      <button type="button" class="nav-btn" (click)="prevMonth()">&lt;</button>
+      <div class="calendar-title-selectors">
+        <select class="calendar-select" (change)="onMonthChange($event)">
+          <option *ngFor="let m of months; let idx = index" [value]="idx" [selected]="idx === currentMonth">
+            {{ m }}
+          </option>
+        </select>
+        <select class="calendar-select" (change)="onYearChange($event)">
+          <option *ngFor="let y of yearOptions" [value]="y" [selected]="y === currentYear">
+            {{ y }}
+          </option>
+        </select>
+      </div>
+      <button type="button" class="nav-btn" (click)="nextMonth()">&gt;</button>
+    </div>
+
+    <!-- Weekday headers -->
+    <div class="weekday-grid">
+      <span class="weekday" *ngFor="let day of weekDays">{{ day }}</span>
+    </div>
+
+    <!-- Days grid -->
+    <div class="days-grid">
+      <button type="button"
+        class="day-btn" 
+        *ngFor="let day of daysInMonth" 
+        [disabled]="!day"
+        [class.empty]="!day"
+        [class.selected]="isDaySelected(day)"
+        (click)="selectDay(day)">
+        {{ day }}
+      </button>
+    </div>
+
+    <!-- Footer Shortcuts -->
+    <div class="calendar-footer">
+      <button type="button" class="shortcut-btn" (click)="clearDate()">Clear</button>
+      <button type="button" class="shortcut-btn" (click)="selectToday()">Today</button>
+    </div>
+  </div>
+</div>

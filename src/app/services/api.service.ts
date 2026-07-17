@@ -39,8 +39,13 @@ export class ApiService {
     return localStorage.getItem('admin_token');
   }
 
+  // Helper to fetch customer bearer token
+  getCustomerToken(): string | null {
+    return localStorage.getItem('customer_token');
+  }
+
   // Generate request headers dynamically
-  private getHeaders(isMultipart = false): HttpHeaders {
+  private getHeaders(endpoint?: string, isMultipart = false): HttpHeaders {
     let headers = new HttpHeaders();
     
     if (!isMultipart) {
@@ -50,10 +55,17 @@ export class ApiService {
     // Attach guest cart header
     headers = headers.set('x-guest-cart-id', this.getGuestCartId());
     
-    // Attach admin Authorization if present
-    const token = this.getAdminToken();
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
+    // Determine whether to attach admin token or customer token
+    const isAdminRoute = endpoint && (endpoint.startsWith('/admin') || endpoint.includes('/admin/'));
+    const adminToken = this.getAdminToken();
+    const customerToken = this.getCustomerToken();
+
+    if (isAdminRoute && adminToken) {
+      headers = headers.set('Authorization', `Bearer ${adminToken}`);
+    } else if (customerToken) {
+      headers = headers.set('Authorization', `Bearer ${customerToken}`);
+    } else if (adminToken) {
+      headers = headers.set('Authorization', `Bearer ${adminToken}`);
     }
 
     return headers;
@@ -70,10 +82,16 @@ export class ApiService {
       errorMessage = error.message;
     }
     
-    // Trigger window event if 401 Unauthorized for admin logout
+    // Trigger window event if 401 Unauthorized for logout
     if (error.status === 401) {
-      localStorage.removeItem('admin_token');
-      window.dispatchEvent(new Event('admin-logout'));
+      const isUrlAdmin = error.url && (error.url.includes('/admin/') || error.url.includes('/admin'));
+      if (isUrlAdmin) {
+        localStorage.removeItem('admin_token');
+        window.dispatchEvent(new Event('admin-logout'));
+      } else {
+        localStorage.removeItem('customer_token');
+        window.dispatchEvent(new Event('customer-logout'));
+      }
     }
 
     return throwError(() => new Error(errorMessage));
@@ -82,7 +100,7 @@ export class ApiService {
   // HTTP wrapper methods
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders(endpoint),
     }).pipe(
       catchError((err) => this.handleError(err))
     );
@@ -91,7 +109,7 @@ export class ApiService {
   post<T>(endpoint: string, body: any): Observable<T> {
     const isMultipart = body instanceof FormData;
     return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, {
-      headers: this.getHeaders(isMultipart),
+      headers: this.getHeaders(endpoint, isMultipart),
     }).pipe(
       catchError((err) => this.handleError(err))
     );
@@ -100,7 +118,7 @@ export class ApiService {
   put<T>(endpoint: string, body: any): Observable<T> {
     const isMultipart = body instanceof FormData;
     return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, {
-      headers: this.getHeaders(isMultipart),
+      headers: this.getHeaders(endpoint, isMultipart),
     }).pipe(
       catchError((err) => this.handleError(err))
     );
@@ -109,7 +127,7 @@ export class ApiService {
   patch<T>(endpoint: string, body: any): Observable<T> {
     const isMultipart = body instanceof FormData;
     return this.http.patch<T>(`${this.baseUrl}${endpoint}`, body, {
-      headers: this.getHeaders(isMultipart),
+      headers: this.getHeaders(endpoint, isMultipart),
     }).pipe(
       catchError((err) => this.handleError(err))
     );
@@ -117,7 +135,7 @@ export class ApiService {
 
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {
-      headers: this.getHeaders(),
+      headers: this.getHeaders(endpoint),
     }).pipe(
       catchError((err) => this.handleError(err))
     );

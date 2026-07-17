@@ -1,0 +1,79 @@
+<div class="wishlist-container">
+  <div class="header-section">
+    <h1>My Wishlist</h1>
+    <p>Manage items you've saved to buy later</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-wrapper" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading your saved items...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-wrapper" *ngIf="!loading && error">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    <p>{{ error }}</p>
+    <button (click)="loadWishlist()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-wrapper" *ngIf="!loading && !error && wishlistProducts.length === 0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E25C5C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+    <h3>Your wishlist is empty</h3>
+    <p>Explore our premium collection and save gifts you love.</p>
+    <a routerLink="/shop" class="shop-now-btn">Explore Collection</a>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="wishlist-grid" *ngIf="!loading && !error && wishlistProducts.length > 0">
+    <div *ngFor="let prod of wishlistProducts" class="wishlist-product-card" [class.out-of-stock]="prod.stock === 0">
+      <a [routerLink]="['/product', prod.slug]" class="product-link">
+        <div class="product-img-wrapper" [class.sold-out-img]="prod.stock === 0">
+          <img
+            [src]="getImageUrl(prod.thumbnail)"
+            [alt]="prod.name"
+            (error)="onImageError($event)"
+          />
+          
+          <!-- Remove from Wishlist Button -->
+          <button class="remove-wishlist-btn flex-center" (click)="removeFromWishlist($event, prod)" title="Remove from Saved">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="product-info-block">
+          <span class="product-sku-tag">{{ prod.sku }}</span>
+          <h3>{{ prod.name }}</h3>
+          
+          <div class="price-row">
+            <span class="actual-price">₹{{ prod.discountPrice || prod.price }}</span>
+            <span class="original-price" *ngIf="prod.discountPrice">₹{{ prod.price }}</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Purchase Action -->
+      <button
+        *ngIf="prod.stock > 0"
+        (click)="addToBag($event, prod)"
+        class="add-to-bag-cta flex-center"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        ADD TO BAG
+      </button>
+      <button
+        *ngIf="prod.stock === 0"
+        disabled
+        class="add-to-bag-cta out-of-stock-cta flex-center"
+      >
+        OUT OF STOCK
+      </button>
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService, ApiResponseWrapper } from './api.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ToastService } from '../shared/toast/toast.service';
 
 export interface Product {
   _id: string;
@@ -53,24 +54,19 @@ export class CartService {
   private readonly toastSubject = new BehaviorSubject<ToastAlert | null>(null);
   readonly toast$: Observable<ToastAlert | null> = this.toastSubject.asObservable();
 
-  private toastTimeout: any;
-
-  constructor(private readonly apiService: ApiService) {
+  constructor(
+    private readonly apiService: ApiService,
+    private readonly toastService: ToastService
+  ) {
     this.refreshCart();
   }
 
   showToast(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
-    }
-    this.toastSubject.next({ message, type });
-    this.toastTimeout = setTimeout(() => {
-      this.toastSubject.next(null);
-    }, 3000);
+    this.toastService.show(message, type);
   }
 
   hideToast(): void {
-    this.toastSubject.next(null);
+    // Deprecated, handled automatically by ToastService dismiss
   }
 
   refreshCart(): void {

@@ -102,6 +102,9 @@
                   <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">
                     ₹{{ prod.price }}
                   </span>
+                  <span class="discount-badge" *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                    {{ Math.round(((prod.price - prod.discountPrice) / prod.price) * 100) }}% OFF
+                  </span>
                 </div>
               </div>
             </a>
@@ -259,7 +262,7 @@
               </div>
               <div>
                 <h4>Call or WhatsApp</h4>
-                <p>+91 98765 43210 (Mon-Sat, 9AM - 7PM)</p>
+                <p>{{ settings?.contactPhone || '+91 63839 18134' }} (Mon-Sat, 9AM - 7PM)</p>
               </div>
             </div>
 
@@ -273,7 +276,7 @@
               </div>
               <div>
                 <h4>Corporate & Concierge Inquiries</h4>
-                <p>concierge@zivorapetals.com</p>
+                <p>{{ settings?.contactEmail || 'zivorapetals@gmail.com' }}</p>
               </div>
             </div>
 
@@ -287,7 +290,14 @@
               </div>
               <div>
                 <h4>Visit Our Experience Atelier</h4>
-                <p>12/A, Golden Petals Mansion, MG Road, Bangalore, KA - 560001</p>
+                <p *ngIf="settings?.address">
+                  {{ settings.address.addressLine1 }}{{ settings.address.addressLine2 ? ', ' +
+                  settings.address.addressLine2 : '' }},
+                  {{ settings.address.city }}, {{ settings.address.state }} - {{ settings.address.pincode }}
+                </p>
+                <p *ngIf="!settings?.address">
+                  73,s.s.kovil street fort,ukkadam,cbe-641001
+                </p>
               </div>
             </div>
           </div>
@@ -333,7 +343,7 @@
       <div class="container footer-grid">
         <div class="footer-brand-info">
           <div style="margin-bottom: 16px;">
-            <app-logo [width]="160" [height]="45" textColor="#ffffff" bowColor="#C5A880"></app-logo>
+            <app-logo [width]="160" [height]="45" textColor="#ffffff" bowColor="#C5A880" [invert]="true"></app-logo>
           </div>
           <p>
             Curating and crafting standard-redefining return gifts, hampers, and memoirs for your life's milestone
@@ -378,7 +388,6 @@
         <div class="footer-links-col">
           <h4>Secure Experience</h4>
           <ul>
-            <li><a routerLink="/admin/login">Admin Dashboard</a></li>
             <li>
               <p>Verified manual UPI payments</p>
             </li>

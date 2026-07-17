@@ -1,0 +1,186 @@
+<div class="orders-tracking-container">
+  <div class="header-section">
+    <h1>My Order History</h1>
+    <p>Track your payments and shipment delivery progress</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-wrapper" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-wrapper" *ngIf="!loading && error">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    <p>{{ error }}</p>
+    <button (click)="loadOrders()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-wrapper" *ngIf="!loading && !error && orders.length === 0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+    <h3>No orders found</h3>
+    <p>You haven't placed any orders yet.</p>
+    <a routerLink="/shop" class="shop-now-btn">Start Shopping</a>
+  </div>
+
+  <!-- Content Grid -->
+  <div class="grid-container" *ngIf="!loading && !error && orders.length > 0">
+    <!-- Left Panel: Orders list -->
+    <div class="orders-list-panel">
+      <div class="panel-header">
+        <h3>Orders ({{ orders.length }})</h3>
+      </div>
+      <div class="orders-list">
+        <div 
+          *ngFor="let order of orders" 
+          class="order-item-card"
+          [class.selected]="selectedOrder?._id === order._id"
+          (click)="selectOrder(order)"
+        >
+          <div class="order-card-header">
+            <span class="order-no">{{ order.orderNumber }}</span>
+            <span class="order-date">{{ order.createdAt | date:'shortDate' }}</span>
+          </div>
+          <div class="order-card-meta">
+            <span class="order-items-count">{{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</span>
+            <span class="order-amount">₹{{ order.totalAmount }}</span>
+          </div>
+          <div class="order-card-status">
+            <span class="status-badge" [ngClass]="(order.orderStatus || '').toLowerCase().replace(' ', '-')">
+              {{ order.orderStatus }}
+            </span>
+            <span class="payment-badge" [ngClass]="(order.paymentStatus || '').toLowerCase().replace(' ', '-')">
+              Payment: {{ order.paymentStatus }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Tracking & Details -->
+    <div class="order-tracking-detail-panel" *ngIf="selectedOrder">
+      <!-- Order details card header -->
+      <div class="detail-header">
+        <div class="header-left">
+          <h2>Order #{{ selectedOrder.orderNumber }}</h2>
+          <p class="placed-on">Placed on {{ selectedOrder.createdAt | date:'medium' }}</p>
+        </div>
+        <div class="header-right">
+          <span class="status-badge large" [ngClass]="(selectedOrder.orderStatus || '').toLowerCase().replace(' ', '-')">
+            {{ selectedOrder.orderStatus }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Tracking Timeline -->
+      <div class="tracking-section card-box" *ngIf="selectedOrder.orderStatus !== 'Cancelled'">
+        <h3>Delivery Progress</h3>
+        <div class="timeline">
+          <div 
+            *ngFor="let step of statusSteps; let i = index" 
+            class="timeline-step"
+            [class.completed]="isStepActive(step.value, selectedOrder.orderStatus)"
+            [class.current]="selectedOrder.orderStatus === step.value && step.value !== 'Delivered'"
+          >
+            <div class="step-marker">
+              <span class="step-number" *ngIf="selectedOrder.orderStatus !== step.value || step.value === 'Delivered'; else currentMarker">
+                <svg *ngIf="isStepActive(step.value, selectedOrder.orderStatus)" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg>
+                <span *ngIf="!isStepActive(step.value, selectedOrder.orderStatus)">{{ i + 1 }}</span>
+              </span>
+              <ng-template #currentMarker>
+                <span class="pulse-marker"></span>
+              </ng-template>
+            </div>
+            <div class="step-label">{{ step.label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cancelled state -->
+      <div class="cancellation-box card-box" *ngIf="selectedOrder.orderStatus === 'Cancelled'">
+        <div class="cancel-banner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" x2="9" y1="9" y2="15"/><line x1="9" x2="15" y1="9" y2="15"/></svg>
+          <div>
+            <h4>This order has been cancelled</h4>
+            <p *ngIf="selectedOrder.cancellationReason">Reason: {{ selectedOrder.cancellationReason }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financials and Payment Status -->
+      <div class="info-grid">
+        <!-- Payment details -->
+        <div class="payment-box card-box">
+          <h3>Payment Status</h3>
+          <div class="payment-status-display">
+            <span class="payment-badge large" [ngClass]="(selectedOrder.paymentStatus || '').toLowerCase().replace(' ', '-')">
+              {{ selectedOrder.paymentStatus }}
+            </span>
+            <p class="status-desc" *ngIf="selectedOrder.paymentStatus === 'Pending Verification'">
+              We are verifying your manual UPI screenshot. Once verified, order will be marked confirmed.
+            </p>
+            <p class="status-desc" *ngIf="selectedOrder.paymentStatus === 'Paid'">
+              Payment successful. Thank you!
+            </p>
+            <p class="status-desc text-error" *ngIf="selectedOrder.paymentStatus === 'Rejected'">
+              Payment screenshot was rejected. Please contact support.
+            </p>
+          </div>
+          <div class="screenshot-preview">
+            <p class="section-sub">UPI Screenshot Uploaded:</p>
+            <a [href]="getImageUrl(selectedOrder.paymentScreenshot)" target="_blank" class="screenshot-link">
+              <img [src]="getImageUrl(selectedOrder.paymentScreenshot)" alt="UPI payment screenshot" />
+              <span class="zoom-text">View Full Image</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Shipping details -->
+        <div class="shipping-box card-box">
+          <h3>Shipping Information</h3>
+          <div class="address-details">
+            <p class="customer-name">{{ selectedOrder.customerDetails.name }}</p>
+            <p class="customer-phone">Phone: {{ selectedOrder.customerDetails.mobile }}</p>
+            <p class="customer-email" *ngIf="selectedOrder.customerDetails.email">Email: {{ selectedOrder.customerDetails.email }}</p>
+            <div class="address-lines">
+              <p>{{ selectedOrder.shippingAddress.addressLine1 }}</p>
+              <p *ngIf="selectedOrder.shippingAddress.addressLine2">{{ selectedOrder.shippingAddress.addressLine2 }}</p>
+              <p>{{ selectedOrder.shippingAddress.city }}, {{ selectedOrder.shippingAddress.state }} - {{ selectedOrder.shippingAddress.pincode }}</p>
+              <p class="landmark" *ngIf="selectedOrder.shippingAddress.landmark">Landmark: {{ selectedOrder.shippingAddress.landmark }}</p>
+            </div>
+            <div class="order-notes" *ngIf="selectedOrder.notes">
+              <p class="section-sub">Order Notes:</p>
+              <p class="notes-text">"{{ selectedOrder.notes }}"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Items list -->
+      <div class="items-box card-box">
+        <h3>Items Ordered</h3>
+        <div class="items-list">
+          <div *ngFor="let item of selectedOrder.items" class="order-item-row">
+            <div class="item-thumb">
+              <img [src]="getImageUrl(item.thumbnail)" [alt]="item.name" />
+            </div>
+            <div class="item-info">
+              <h4>{{ item.name }}</h4>
+              <p class="item-sku">SKU: {{ item.sku }}</p>
+            </div>
+            <div class="item-qty">Qty: {{ item.quantity }}</div>
+            <div class="item-price">₹{{ item.price }}</div>
+            <div class="item-total">₹{{ item.price * item.quantity }}</div>
+          </div>
+        </div>
+        <div class="order-total-bar">
+          <span class="total-label">Grand Total:</span>
+          <span class="total-val">₹{{ selectedOrder.totalAmount }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

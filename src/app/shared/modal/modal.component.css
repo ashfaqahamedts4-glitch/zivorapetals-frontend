@@ -1,0 +1,84 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 5, 8, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInModal 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.modal-card {
+  width: 90%;
+  background: rgba(255, 253, 253, 0.96);
+  border: 1px solid rgba(197, 168, 128, 0.5);
+  box-shadow: 0 24px 64px rgba(97, 11, 36, 0.15), 0 4px 16px rgba(197, 168, 128, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.92) translateY(20px);
+  animation: scaleInModal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(197, 168, 128, 0.25);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 245, 246, 0.5) 100%);
+}
+
+.modal-header h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #610B24;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #c5a880;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(97, 11, 36, 0.08);
+  color: #610B24;
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 24px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Animations */
+@keyframes fadeInModal {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleInModal {
+  to {
+    transform: scale(1) translateY(0);
+  }
+}

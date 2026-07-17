@@ -29,6 +29,21 @@ interface Testimonial {
   image: string;
 }
 
+interface Settings {
+  _id?: string;
+  companyName: string;
+  contactEmail: string;
+  contactPhone: string;
+  upiId: string;
+  address: {
+    addressLine1: string;
+    addressLine2?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+}
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -38,11 +53,13 @@ interface Testimonial {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   readonly getImageUrl = getImageUrl;
+  readonly Math = Math;
   banners: Banner[] = [];
   categories: Category[] = [];
   featuredProducts: Product[] = [];
   testimonials: Testimonial[] = [];
-  
+  settings: Settings | null = null;
+
   activeBanner = 0;
   loading = true;
   private bannerInterval: any;
@@ -144,6 +161,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('HomeComponent: Error fetching testimonials:', err);
         this.cdr.detectChanges();
+      }
+    });
+
+    this.apiService.get<ApiResponseWrapper<Settings>>('/settings').subscribe({
+      next: (res) => {
+        console.log('HomeComponent: Settings received:', res);
+        this.settings = res?.data || null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('HomeComponent: Error fetching settings:', err);
       }
     });
   }

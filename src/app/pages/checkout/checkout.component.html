@@ -31,8 +31,22 @@
         <strong>{{ successOrder.customerDetails.name }}</strong><br />
         {{ successOrder.shippingAddress.addressLine1 }}, {{ successOrder.shippingAddress.city }}, {{ successOrder.shippingAddress.pincode }}
       </div>
+      <!-- Post-checkout sign up helper -->
+      <div class="success-signup-prompt" *ngIf="!(authService.isLoggedIn$ | async)">
+        <p>Want to track this order's payment and delivery status?</p>
+        <a routerLink="/customer/login" class="prompt-link">Create an Account with email <strong>{{ successOrder.customerDetails.email }}</strong></a>
+      </div>
     </div>
     <a routerLink="/shop" class="btn-premium mt-24">Continue Shopping</a>
+  </div>
+
+  <!-- Optional customer login banner -->
+  <div class="login-prompt-banner" *ngIf="!successOrder && !(authService.isLoggedIn$ | async)">
+    <p>
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-icon"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>
+      Already have a customer account?
+      <a routerLink="/customer/login" [queryParams]="{ returnUrl: '/checkout' }">Login now to auto-fill details</a>
+    </p>
   </div>
 
   <!-- Checkout Grid Layout -->

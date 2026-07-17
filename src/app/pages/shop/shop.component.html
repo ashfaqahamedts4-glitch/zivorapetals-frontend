@@ -1,200 +1,309 @@
 <div class="shop-page container">
-  <!-- Search/Filter Header row -->
+
+  <!-- ===== SEARCH & FILTER HEADER ===== -->
   <section class="shop-header">
     <h2 class="luxury-heading">Signature Gifts Catalog</h2>
-    
+
+    <!-- Search + filter row — grouped together -->
     <div class="shop-search-bar-row">
       <form class="shop-search-form" (submit)="handleSearchSubmit($event)">
-        <input
-          type="text"
-          placeholder="Search wood crafts, gift boxes, bags..."
-          [(ngModel)]="searchInput"
-          name="searchInput"
-          class="form-input"
-        />
+        <div class="search-input-wrap">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            placeholder="Search gifts, flowers, candles..."
+            [(ngModel)]="searchInput"
+            name="searchInput"
+            class="search-field"
+          />
+        </div>
         <button type="submit" class="btn-premium search-submit-btn">Search</button>
       </form>
-      
-      <button 
-        class="mobile-filter-toggle btn-secondary"
-        (click)="toggleMobileFilters()"
+
+      <button class="filter-toggle-btn" (click)="toggleMobileFilters()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filters
+        <span class="filter-active-dot" *ngIf="categoryId || minPrice || maxPrice"></span>
+      </button>
+    </div>
+
+    <!-- Desktop category quick-tab strip -->
+    <div class="desktop-category-tabs">
+      <button
+        class="desktop-cat-tab"
+        [class.active]="categoryId === '' && !showOnlyWishlist && !search"
+        (click)="updateFilters({ category: '', page: 1 })"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-        <span>Filters</span>
+        All
+      </button>
+      <button
+        class="desktop-cat-tab wishlist-tab"
+        [class.active]="showOnlyWishlist"
+        (click)="toggleWishlistFilter()"
+      >
+        ♥ My Wishlist
+      </button>
+      <button
+        *ngFor="let cat of categories"
+        class="desktop-cat-tab"
+        [class.active]="categoryId === cat._id && !showOnlyWishlist"
+        (click)="updateFilters({ category: cat._id, page: 1 })"
+      >
+        {{ cat.name }}
       </button>
     </div>
   </section>
 
-  <!-- Main Grid Layout -->
-  <div class="shop-main-layout">
-    <!-- Filter Sidebar -->
-    <aside class="shop-filters-sidebar" [class.mobile-show]="showMobileFilters">
-      <!-- Mobile Close filters -->
-      <div class="mobile-filter-header" *ngIf="showMobileFilters">
-        <h3>Filter Products</h3>
-        <button class="mobile-close-filters-btn" (click)="toggleMobileFilters()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+  <!-- ===== SLIDE-IN FILTER PANEL (all screens) ===== -->
+  <!-- Backdrop -->
+  <div class="filter-backdrop" *ngIf="showMobileFilters" (click)="toggleMobileFilters()"></div>
+
+  <!-- Drawer -->
+  <aside class="shop-filter-drawer" [class.open]="showMobileFilters">
+    <div class="drawer-header">
+      <h3>Filter Products</h3>
+      <button class="drawer-close-btn" (click)="toggleMobileFilters()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Categories -->
+    <div class="filter-widget">
+      <h4>Categories</h4>
+
+      <div class="category-search-container" *ngIf="categories.length > 5">
+        <input
+          type="text"
+          [(ngModel)]="categorySearchQuery"
+          placeholder="Search categories..."
+          class="category-search-input"
+        />
+        <svg class="category-search-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </div>
+
+      <div class="filter-options-list scrollable-luxury-y">
+        <button
+          class="filter-link-btn"
+          [class.active]="showOnlyWishlist"
+          (click)="toggleWishlistFilter(); toggleMobileFilters()"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" [attr.fill]="showOnlyWishlist ? '#ffffff' : '#E25C5C'" [attr.stroke]="showOnlyWishlist ? '#ffffff' : '#E25C5C'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px; display: inline-block; vertical-align: middle;">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          My Wishlist ({{ wishlistCount }})
+        </button>
+
+        <button
+          class="filter-link-btn"
+          [class.active]="categoryId === '' && !showOnlyWishlist"
+          (click)="updateFilters({ category: '', page: 1 }); toggleMobileFilters()"
+        >
+          All Categories
+        </button>
+        <button
+          *ngFor="let cat of filteredCategories"
+          class="filter-link-btn"
+          [class.active]="categoryId === cat._id && !showOnlyWishlist"
+          (click)="updateFilters({ category: cat._id, page: 1 }); toggleMobileFilters()"
+        >
+          {{ cat.name }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Price Range -->
+    <div class="filter-widget">
+      <h4>Price Range</h4>
+      <form class="price-filter-form" (submit)="applyPriceFilter($event)">
+        <div class="price-inputs">
+          <input type="number" placeholder="Min ₹" [(ngModel)]="localMinPrice" name="localMinPrice" class="form-input price-input" />
+          <span>to</span>
+          <input type="number" placeholder="Max ₹" [(ngModel)]="localMaxPrice" name="localMaxPrice" class="form-input price-input" />
+        </div>
+        <button type="submit" class="btn-gold price-apply-btn">Apply Price</button>
+      </form>
+    </div>
+
+    <!-- Sorting -->
+    <div class="filter-widget">
+      <h4>Sort By</h4>
+      <app-dropdown
+        [options]="sortOptions"
+        [selectedValue]="sortBy + '-' + sortOrder"
+        (selectedValueChange)="onSortChange($event)"
+        placeholder="Sort products"
+      ></app-dropdown>
+    </div>
+
+    <button (click)="resetFilters(); toggleMobileFilters()" class="btn-secondary reset-filters-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+      Reset Filters
+    </button>
+  </aside>
+
+  <!-- ===== ACTIVE FILTER INDICATOR ===== -->
+  <div class="active-filter-bar" *ngIf="categoryId || search || showOnlyWishlist || minPrice || maxPrice">
+    <span class="active-filter-label">Filtered:</span>
+    <span class="active-filter-chip" *ngIf="showOnlyWishlist">♥ My Wishlist</span>
+    <span class="active-filter-chip" *ngIf="categoryId">{{ getCategoryName(categoryId) }}</span>
+    <span class="active-filter-chip" *ngIf="search">"{{ search }}"</span>
+    <span class="active-filter-chip" *ngIf="minPrice || maxPrice">₹{{ minPrice || '0' }} – ₹{{ maxPrice || '∞' }}</span>
+    <button class="active-filter-clear" (click)="resetFilters()">✕ Clear</button>
+  </div>
+
+  <!-- ===== FILTERED RESULTS VIEW (when search/category/price filter active) ===== -->
+  <section class="filtered-results-section" *ngIf="categoryId || search || showOnlyWishlist || minPrice || maxPrice">
+    <div class="catalog-loading flex-center" *ngIf="loading">
+      <div class="luxury-spinner"></div>
+      <p>Arranging collection...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div class="catalog-meta-row">
+        <span class="results-count">Showing {{ totalProducts }} premium products</span>
+      </div>
+
+      <div class="shop-products-grid" *ngIf="products.length > 0; else emptyFiltered">
+        <div *ngFor="let prod of products" class="product-card luxury-card" [class.out-of-stock]="prod.stock === 0">
+          <a [routerLink]="['/product', prod.slug]" class="product-card-link">
+            <div class="product-card-img" [class.sold-out-img]="prod.stock === 0">
+              <img [src]="getImageUrl(prod.thumbnail)" [alt]="prod.name" (error)="onImageError($event)" />
+              <button class="product-share-btn flex-center" (click)="shareProduct($event, prod)" title="Share Product">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+              <button class="product-wishlist-btn flex-center" [class.in-wishlist]="isInWishlist(prod._id)" (click)="toggleWishlist($event, prod)" title="Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" [attr.fill]="isInWishlist(prod._id) ? '#E25C5C' : 'none'" [attr.stroke]="isInWishlist(prod._id) ? '#E25C5C' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <div class="product-badges-container">
+                <span class="product-badge badge-gold" *ngIf="prod.newArrival">New</span>
+                <span class="product-badge badge-best-seller" *ngIf="prod.bestSeller">Best Seller</span>
+                <span class="product-badge badge-sold-out" *ngIf="prod.stock === 0">Sold Out</span>
+              </div>
+              <div class="sold-out-overlay flex-center" *ngIf="prod.stock === 0">
+                <span class="sold-out-overlay-text">OUT OF STOCK</span>
+              </div>
+            </div>
+            <div class="product-card-info">
+              <span class="product-sku">{{ prod.sku }}</span>
+              <h3>{{ prod.name }}</h3>
+              <p class="product-short-desc">{{ prod.shortDescription }}</p>
+              <div class="product-price-block">
+                <span class="current-price">₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}</span>
+                <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">₹{{ prod.price }}</span>
+                <span class="discount-badge" *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                  {{ Math.round(((prod.price - prod.discountPrice) / prod.price) * 100) }}% OFF
+                </span>
+              </div>
+            </div>
+          </a>
+          <button class="btn-premium add-to-bag-btn" [class.sold-out-btn]="prod.stock === 0" (click)="addToBag(prod)" [disabled]="prod.stock === 0">
+            <svg *ngIf="prod.stock > 0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>{{ prod.stock > 0 ? 'Add To Bag' : 'Out Of Stock' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <ng-template #emptyFiltered>
+        <div class="catalog-empty text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-catalog-icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <h3>No gifts found</h3>
+          <p>Try resetting filters or searching with a different term.</p>
+          <button (click)="resetFilters()" class="btn-premium mt-16">View All Collection</button>
+        </div>
+      </ng-template>
+
+      <div class="pagination-bar" *ngIf="totalPages > 1">
+        <button class="pagination-arrow" (click)="handlePageChange(page - 1)" [disabled]="page === 1" aria-label="Previous page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button *ngFor="let pageNum of getPagesArray()" class="pagination-number" [class.active]="page === pageNum" (click)="handlePageChange(pageNum)">{{ pageNum }}</button>
+        <button class="pagination-arrow" (click)="handlePageChange(page + 1)" [disabled]="page === totalPages" aria-label="Next page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- ===== BROWSE BY CATEGORY (default view — no filter active) ===== -->
+  <section class="category-browse-section" *ngIf="!categoryId && !search && !showOnlyWishlist && !minPrice && !maxPrice">
+
+    <div class="cat-browse-loading flex-center" *ngIf="categoryRowsLoading">
+      <div class="luxury-spinner"></div>
+      <p>Loading collection...</p>
+    </div>
+
+    <div *ngFor="let row of categoryRows" class="cat-row-section">
+      <!-- Category Header -->
+      <div class="cat-row-header">
+        <div class="cat-row-title-wrap">
+          <h3 class="cat-row-title">{{ row.category.name }}</h3>
+          <div class="cat-row-title-line"></div>
+        </div>
+        <button class="cat-row-see-all" (click)="updateFilters({ category: row.category._id, page: 1 })">
+          See all
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       </div>
 
-      <!-- Categories -->
-      <div class="filter-widget">
-        <h4>Categories</h4>
-        <div class="filter-options-list">
-          <button
-            class="filter-link-btn"
-            [class.active]="categoryId === ''"
-            (click)="updateFilters({ category: '', page: 1 }); toggleMobileFilters()"
-          >
-            All Categories
-          </button>
-          <button
-            *ngFor="let cat of categories"
-            class="filter-link-btn"
-            [class.active]="categoryId === cat._id"
-            (click)="updateFilters({ category: cat._id, page: 1 }); toggleMobileFilters()"
-          >
-            {{ cat.name }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Price Limits -->
-      <div class="filter-widget">
-        <h4>Price Range</h4>
-        <form (submit)="handlePriceApply($event); toggleMobileFilters()" class="price-filter-form">
-          <div class="price-inputs">
-            <input
-              type="number"
-              placeholder="Min ₹"
-              [(ngModel)]="localMinPrice"
-              name="localMinPrice"
-              class="form-input price-input"
-            />
-            <span>to</span>
-            <input
-              type="number"
-              placeholder="Max ₹"
-              [(ngModel)]="localMaxPrice"
-              name="localMaxPrice"
-              class="form-input price-input"
-            />
-          </div>
-          <button type="submit" class="btn-gold price-apply-btn">Apply Price</button>
-        </form>
-      </div>
-
-      <!-- Sorting Select -->
-      <div class="filter-widget">
-        <h4>Sort By</h4>
-        <select
-          [ngModel]="sortBy + '-' + sortOrder"
-          (ngModelChange)="updateFilters({ sortBy: $event.split('-')[0], sortOrder: $event.split('-')[1], page: 1 })"
-          name="sortOption"
-          class="form-input sort-select"
-        >
-          <option value="createdAt-desc">Newest Arrivals</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="name-asc">Alphabetical: A-Z</option>
-        </select>
-      </div>
-
-      <!-- Reset button -->
-      <button (click)="resetFilters(); toggleMobileFilters()" class="btn-secondary reset-filters-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
-        <span>Reset Filters</span>
-      </button>
-    </aside>
-
-    <!-- Products grid catalog -->
-    <main class="shop-catalog-area">
-      <div class="catalog-loading flex-center" *ngIf="loading">
-        <div class="luxury-spinner"></div>
-        <p>Arranging collection...</p>
-      </div>
-
-      <ng-container *ngIf="!loading">
-        <div class="catalog-meta-row" *ngIf="products.length > 0">
-          <span class="results-count">Showing {{ totalProducts }} premium products</span>
-        </div>
-
-        <div class="shop-products-grid" *ngIf="products.length > 0; else emptyState">
-          <div *ngFor="let prod of products" class="product-card luxury-card">
-            <a [routerLink]="['/product', prod.slug]" class="product-card-link">
-              <div class="product-card-img">
-                <img
-                  [src]="getImageUrl(prod.thumbnail)"
-                  [alt]="prod.name"
-                  (error)="onImageError($event)"
-                />
+      <!-- Horizontal scroll row -->
+      <div class="cat-row-grid">
+        <div *ngFor="let prod of row.products" class="cat-row-card" [class.out-of-stock]="prod.stock === 0">
+          <a [routerLink]="['/product', prod.slug]" class="cat-row-card-link">
+            <div class="cat-row-card-img" [class.sold-out-img]="prod.stock === 0">
+              <img [src]="getImageUrl(prod.thumbnail)" [alt]="prod.name" (error)="onImageError($event)" />
+              <!-- Wishlist -->
+              <button class="product-wishlist-btn flex-center" [class.in-wishlist]="isInWishlist(prod._id)" (click)="toggleWishlist($event, prod)" title="Wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" [attr.fill]="isInWishlist(prod._id) ? '#E25C5C' : 'none'" [attr.stroke]="isInWishlist(prod._id) ? '#E25C5C' : 'currentColor'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <!-- Share -->
+              <button class="product-share-btn flex-center" (click)="shareProduct($event, prod)" title="Share">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+              <!-- Badges -->
+              <div class="product-badges-container">
                 <span class="product-badge badge-gold" *ngIf="prod.newArrival">New</span>
-                <span class="product-badge badge-dark" *ngIf="prod.stock === 0">Sold Out</span>
+                <span class="product-badge badge-best-seller" *ngIf="prod.bestSeller">Best Seller</span>
+                <span class="product-badge badge-sold-out" *ngIf="prod.stock === 0">Sold Out</span>
               </div>
-              <div class="product-card-info">
-                <span class="product-sku">{{ prod.sku }}</span>
-                <h3>{{ prod.name }}</h3>
-                <p class="product-short-desc">{{ prod.shortDescription }}</p>
-                <div class="product-price-block">
-                  <span class="current-price">
-                    ₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}
-                  </span>
-                  <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">
-                    ₹{{ prod.price }}
-                  </span>
-                </div>
+              <!-- OOS overlay -->
+              <div class="sold-out-overlay flex-center" *ngIf="prod.stock === 0">
+                <span class="sold-out-overlay-text">OUT OF STOCK</span>
               </div>
-            </a>
-            <button
-              class="btn-premium add-to-bag-btn"
-              (click)="addToBag(prod)"
-              [disabled]="prod.stock === 0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-              <span>Add To Bag</span>
-            </button>
-          </div>
-        </div>
+            </div>
 
-        <ng-template #emptyState>
-          <div class="catalog-empty text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-catalog-icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-            <h3>No gifts found</h3>
-            <p>Try resetting filters or searching with a different term.</p>
-            <button (click)="resetFilters()" class="btn-premium mt-16">View All Collection</button>
-          </div>
-        </ng-template>
-
-        <!-- Pagination -->
-        <div class="pagination-bar" *ngIf="totalPages > 1">
+            <div class="cat-row-card-info">
+              <div class="cat-row-card-name">{{ prod.name }}</div>
+              <p class="cat-row-card-desc">{{ prod.shortDescription }}</p>
+              <div class="cat-row-card-price-row">
+                <span class="current-price">₹{{ prod.discountPrice && prod.discountPrice > 0 ? prod.discountPrice : prod.price }}</span>
+                <span class="old-price" *ngIf="prod.discountPrice && prod.discountPrice > 0">₹{{ prod.price }}</span>
+                <span class="discount-badge" *ngIf="prod.discountPrice && prod.discountPrice > 0">
+                  {{ Math.round(((prod.price - prod.discountPrice) / prod.price) * 100) }}% OFF
+                </span>
+              </div>
+            </div>
+          </a>
           <button
-            class="pagination-arrow"
-            (click)="handlePageChange(page - 1)"
-            [disabled]="page === 1"
-            aria-label="Previous page"
+            class="btn-premium cat-row-card-btn"
+            [class.sold-out-btn]="prod.stock === 0"
+            (click)="addToBag(prod)"
+            [disabled]="prod.stock === 0"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          
-          <button
-            *ngFor="let pageNum of getPagesArray()"
-            class="pagination-number"
-            [class.active]="page === pageNum"
-            (click)="handlePageChange(pageNum)"
-          >
-            {{ pageNum }}
-          </button>
-
-          <button
-            class="pagination-arrow"
-            (click)="handlePageChange(page + 1)"
-            [disabled]="page === totalPages"
-            aria-label="Next page"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            <svg *ngIf="prod.stock > 0" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            {{ prod.stock > 0 ? 'Add to Bag' : 'Out of Stock' }}
           </button>
         </div>
-      </ng-container>
-    </main>
-  </div>
+      </div>
+    </div>
+
+    <!-- Empty state if no category rows -->
+    <div class="catalog-empty text-center" *ngIf="!categoryRowsLoading && categoryRows.length === 0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-catalog-icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <h3>No collection available</h3>
+      <p>Check back soon for new arrivals.</p>
+    </div>
+  </section>
+
 </div>

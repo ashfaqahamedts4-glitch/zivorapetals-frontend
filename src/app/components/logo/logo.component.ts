@@ -15,7 +15,13 @@ import { NgStyle } from '@angular/common';
     >
       <img
         src="assets/logo.jpg"
-        style="width: 42%; height: auto; mix-blend-mode: multiply; transform: scale(1.85); transform-origin: center center;"
+        [ngStyle]="{
+          'width': '42%',
+          'height': 'auto',
+          'transform': 'scale(1.85)',
+          'transform-origin': 'center center',
+          'mix-blend-mode': invert ? 'normal' : 'multiply'
+        }"
         alt="Zivora Petals"
       />
     </div>
@@ -26,4 +32,5 @@ export class LogoComponent {
   @Input() height: string | number = 'auto';
   @Input() textColor = '#610B24';
   @Input() bowColor = '#610B24';
+  @Input() invert = false;
 }

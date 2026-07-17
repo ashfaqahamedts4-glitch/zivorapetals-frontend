@@ -2,40 +2,49 @@
 
 :root {
   /* Zivora Petals Theme Colors */
-  --primary-color: #610B24;      /* Elegant Deep Burgundy */
-  --primary-light: #7E1432;      /* Medium Rose/Wine */
-  --primary-soft: #FAF2F2;       /* Warm Blush/Cream background tint */
-  --accent-color: #C5A880;       /* Luxury Soft Gold */
+  --primary-color: #610B24;
+  /* Elegant Deep Burgundy */
+  --primary-light: #7E1432;
+  /* Medium Rose/Wine */
+  --primary-soft: #FAF2F2;
+  /* Warm Blush/Cream background tint */
+  --accent-color: #C5A880;
+  /* Luxury Soft Gold */
   --accent-hover: #B2956E;
-  
-  --bg-cream: #FAF2F2;           /* Blush Cream background */
+
+  --bg-cream: #FAF2F2;
+  /* Blush Cream background */
   --bg-white: #FFFFFF;
-  --bg-dark: #1F050B;            /* Deep dark variant */
-  
-  --text-dark: #2D1F22;          /* Charcoal text */
+  --bg-dark: #1F050B;
+  /* Deep dark variant */
+
+  --text-dark: #2D1F22;
+  /* Charcoal text */
   --text-light: #FFFFFF;
-  --text-muted: #756367;         /* Soft grey-pink text */
-  
-  --border-color: #E2D3D6;       /* Soft pink-grey border */
+  --text-muted: #756367;
+  /* Soft grey-pink text */
+
+  --border-color: #E2D3D6;
+  /* Soft pink-grey border */
   --border-focus: #610B24;
-  
+
   --success-color: #2E7D32;
   --danger-color: #D32F2F;
   --warning-color: #ED6C02;
-  
+
   --font-serif: 'Cinzel', Georgia, serif;
   --font-sans: 'Outfit', 'Inter', system-ui, sans-serif;
-  
+
   /* Layout & Border Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
   --radius-full: 9999px;
-  
+
   --transition-fast: all 0.15s ease;
   --transition-normal: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   --transition-slow: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-  
+
   --shadow-sm: 0 2px 8px rgba(97, 11, 36, 0.05);
   --shadow-md: 0 8px 24px rgba(97, 11, 36, 0.08);
   --shadow-lg: 0 16px 40px rgba(97, 11, 36, 0.12);
@@ -65,7 +74,10 @@ a {
   transition: var(--transition-fast);
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
 }
 
@@ -74,13 +86,16 @@ button, input, select, textarea {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-cream);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: var(--radius-full);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-light);
 }
@@ -104,7 +119,12 @@ button, input, select, textarea {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-serif);
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -117,6 +137,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 40px;
   padding-bottom: 16px;
 }
+
 .luxury-heading::after {
   content: '';
   position: absolute;
@@ -127,6 +148,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 1px;
   background-color: var(--accent-color);
 }
+
 .luxury-heading::before {
   content: '◆';
   position: absolute;
@@ -159,6 +181,7 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
   font-size: 13px;
 }
+
 .btn-premium::before {
   content: '';
   position: absolute;
@@ -166,18 +189,21 @@ h1, h2, h3, h4, h5, h6 {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: 0.5s;
 }
+
 .btn-premium:hover::before {
   left: 100%;
 }
+
 .btn-premium:hover {
   background-color: var(--primary-light);
   border-color: var(--primary-light);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
+
 .btn-premium:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -201,6 +227,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-normal);
   font-size: 13px;
 }
+
 .btn-secondary:hover {
   background-color: var(--primary-soft);
   box-shadow: var(--shadow-sm);
@@ -223,6 +250,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition-normal);
   font-size: 13px;
 }
+
 .btn-gold:hover {
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
@@ -238,6 +266,7 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: var(--shadow-sm);
   transition: var(--transition-normal);
 }
+
 .luxury-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
@@ -248,6 +277,7 @@ h1, h2, h3, h4, h5, h6 {
 .form-group {
   margin-bottom: 20px;
 }
+
 .form-label {
   display: block;
   font-size: 14px;
@@ -255,6 +285,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 6px;
   color: var(--text-dark);
 }
+
 .form-input {
   width: 100%;
   padding: 12px 16px;
@@ -265,6 +296,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 15px;
   transition: var(--transition-fast);
 }
+
 .form-input:focus {
   outline: none;
   border-color: var(--border-focus);
@@ -282,22 +314,27 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
 .badge-primary {
   background-color: var(--primary-soft);
   color: var(--primary-color);
 }
+
 .badge-gold {
   background-color: #FFF9E6;
   color: #B38600;
 }
+
 .badge-success {
   background-color: #E8F5E9;
   color: var(--success-color);
 }
+
 .badge-danger {
   background-color: #FFEBEE;
   color: var(--danger-color);
 }
+
 .badge-warning {
   background-color: #FFF3E0;
   color: var(--warning-color);
@@ -313,6 +350,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   gap: 10px;
 }
+
 .toast {
   background-color: var(--bg-white);
   border-left: 4px solid var(--primary-color);
@@ -327,15 +365,25 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 14px;
   animation: slideIn 0.3s ease-out;
 }
-.toast-success { border-left-color: var(--success-color); }
-.toast-error { border-left-color: var(--danger-color); }
-.toast-info { border-left-color: var(--accent-color); }
+
+.toast-success {
+  border-left-color: var(--success-color);
+}
+
+.toast-error {
+  border-left-color: var(--danger-color);
+}
+
+.toast-info {
+  border-left-color: var(--accent-color);
+}
 
 @keyframes slideIn {
   from {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -353,7 +401,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Angular Root layout wrapper */
