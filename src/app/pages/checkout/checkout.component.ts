@@ -171,7 +171,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
 
     this.checkoutLoading = true;
-    this.cartService.showToast('Placing your order and sending confirmation email, please wait...', 'info');
+    this.cartService.showToast('Placing your order, please wait...', 'info');
     this.cdr.detectChanges();
     const payload = {
       customerDetails: {
