@@ -40,6 +40,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   landmark = '';
   notes = '';
 
+  // Wizard Step State
+  currentStep = 1;
+  upiCopied = false;
+
   // Screenshot upload status
   screenshotFile: File | null = null;
   screenshotUrl = '';
@@ -208,4 +212,99 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       },
     });
   }
+
+  validateStep1(): boolean {
+    this.validationError = null;
+    if (!this.name.trim()) {
+      this.validationError = 'Please enter your full name.';
+    } else if (!this.email.trim() || !this.email.includes('@')) {
+      this.validationError = 'Please enter a valid email address.';
+    } else if (!this.mobile.trim() || this.mobile.trim().length < 10) {
+      this.validationError = 'Please enter a valid 10-digit mobile number.';
+    } else if (!this.addressLine1.trim()) {
+      this.validationError = 'Please enter your street address line 1.';
+    } else if (!this.city.trim()) {
+      this.validationError = 'Please enter your city.';
+    } else if (!this.state.trim()) {
+      this.validationError = 'Please enter your state.';
+    } else if (!this.pincode.trim()) {
+      this.validationError = 'Please enter a valid postal pincode.';
+    }
+
+    if (this.validationError) {
+      this.cartService.showToast(this.validationError, 'error');
+      return false;
+    }
+    return true;
+  }
+
+  nextStep(): void {
+    if (this.currentStep === 1) {
+      if (!this.validateStep1()) return;
+      this.currentStep = 2;
+    } else if (this.currentStep === 2) {
+      this.currentStep = 3;
+    }
+    this.scrollToCheckoutTop();
+    this.cdr.detectChanges();
+  }
+
+  prevStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+      this.scrollToCheckoutTop();
+      this.cdr.detectChanges();
+    }
+  }
+
+  goToStep(step: number): void {
+    if (step === this.currentStep) return;
+    // Always allow navigating back to previously completed steps
+    if (step < this.currentStep) {
+      this.currentStep = step;
+      this.scrollToCheckoutTop();
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // Moving forward: step 1 -> step 2
+    if (step === 2 && this.currentStep === 1) {
+      if (this.validateStep1()) {
+        this.currentStep = 2;
+        this.scrollToCheckoutTop();
+        this.cdr.detectChanges();
+      }
+      return;
+    }
+
+    // Moving forward: step 2 -> step 3
+    if (step === 3 && this.currentStep === 2) {
+      this.currentStep = 3;
+      this.scrollToCheckoutTop();
+      this.cdr.detectChanges();
+      return;
+    }
+  }
+
+  copyUpiId(): void {
+    const upi = this.settings?.upiId || 'zivora@okaxis';
+    navigator.clipboard.writeText(upi).then(() => {
+      this.upiCopied = true;
+      this.cartService.showToast('UPI ID copied to clipboard!', 'success');
+      setTimeout(() => {
+        this.upiCopied = false;
+        this.cdr.detectChanges();
+      }, 2500);
+      this.cdr.detectChanges();
+    }).catch(() => {
+      this.cartService.showToast('Failed to copy UPI ID.', 'error');
+    });
+  }
+
+  private scrollToCheckoutTop(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  }
 }
+

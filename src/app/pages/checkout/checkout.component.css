@@ -1,5 +1,5 @@
 .checkout-page {
-  padding-top: 30px;
+  padding-top: 24px;
   padding-bottom: 80px;
 }
 
@@ -9,28 +9,189 @@
   color: var(--danger-color);
   border-radius: var(--radius-sm);
   padding: 14px 20px;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 12px;
   font-size: 14px;
+  animation: fadeIn 0.3s ease-out;
 }
 
+/* ==================== STEP WIZARD HEADER ==================== */
+.checkout-step-wizard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 820px;
+  margin: 0 auto 36px auto;
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 14px 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-fast);
+}
+
+.wizard-step.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.wizard-step:not(.disabled):hover .step-badge {
+  transform: scale(1.06);
+}
+
+.step-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--bg-cream);
+  border: 2px solid var(--border-color);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition-normal);
+  flex-shrink: 0;
+}
+
+.wizard-step.active .step-badge {
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(97, 11, 36, 0.15);
+}
+
+.wizard-step.completed .step-badge {
+  background-color: var(--success-color);
+  color: #FFFFFF;
+  border-color: var(--success-color);
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.wizard-step.active .step-title {
+  color: var(--primary-color);
+}
+
+.wizard-step.completed .step-title {
+  color: var(--text-dark);
+}
+
+.step-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.wizard-connector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--border-color);
+  margin: 0 20px;
+  border-radius: 2px;
+  transition: var(--transition-normal);
+}
+
+.wizard-connector.completed {
+  background-color: var(--success-color);
+}
+
+/* ==================== CHECKOUT GRID & STEP CARDS ==================== */
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 40px;
+  grid-template-columns: 1fr 380px;
+  gap: 36px;
   align-items: flex-start;
+}
+
+.step-content-card {
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 32px;
+}
+
+.step-animated-in {
+  animation: slideFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.step-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .section-title {
   font-size: 20px;
-  margin-bottom: 20px;
   font-family: var(--font-serif);
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-color);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
+.step-num-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--primary-soft);
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  margin-right: 12px;
+}
+
+.step-indicator-pill {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-color);
+  background-color: var(--primary-soft);
+  border: 1px solid var(--border-color);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+/* Form inputs & grids */
 .form-grid-two {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -47,15 +208,171 @@
   resize: vertical;
 }
 
-.mt-32 {
-  margin-top: 32px;
+/* ==================== STEP 2: UPI PAYMENT STYLES ==================== */
+.upi-payment-instruction-box {
+  background-color: var(--bg-cream);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
-/* Upload zone styles */
+.upi-amount-banner {
+  background-color: var(--bg-white);
+  border-left: 4px solid var(--accent-color);
+  padding: 14px 18px;
+  font-size: 16px;
+  color: var(--text-dark);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.upi-amount-banner strong {
+  color: var(--primary-color);
+  font-size: 18px;
+}
+
+.upi-instructions-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.upi-qr-display-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.qr-code-wrapper {
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-color);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  width: 190px;
+  height: 190px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.qr-code-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.qr-code-placeholder {
+  width: 190px;
+  height: 190px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.upi-id-copy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--primary-soft);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+}
+
+.upi-id-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.upi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.upi-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.btn-copy-upi {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-copy-upi:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.payment-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pay-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-dark);
+}
+
+.pay-step-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ==================== STEP 3: UPLOAD & CONFIRM ==================== */
+.payment-explanation {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
 .upload-dropzone {
   border: 2px dashed var(--border-color);
   border-radius: var(--radius-md);
-  padding: 30px 20px;
+  padding: 32px 20px;
   text-align: center;
   background-color: var(--bg-white);
   cursor: pointer;
@@ -96,8 +413,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--success-color);
+}
+
+.screenshot-preview-box {
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 2px solid var(--success-color);
+  box-shadow: var(--shadow-sm);
+  margin: 10px 0;
+}
+
+.screenshot-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .file-name {
@@ -106,19 +439,80 @@
   font-weight: 500;
 }
 
+.change-file-btn {
+  font-size: 12px;
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.address-recap-box {
+  background-color: var(--bg-cream);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.address-recap-box h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+}
+
+.address-recap-box p {
+  font-size: 13px;
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.btn-edit-recap {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 8px;
+  padding: 0;
+}
+
+/* ==================== NAVIGATION BUTTONS BAR ==================== */
+.wizard-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.wizard-btn-next,
+.wizard-btn-prev {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  font-size: 13px;
+}
+
 .checkout-submit-btn {
-  width: 100%;
-  padding: 16px;
+  padding: 16px 32px;
   font-size: 14px;
 }
 
-/* Summary Panel Right side */
+/* ==================== SUMMARY PANEL RIGHT SIDE ==================== */
 .summary-card {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
-.summary-card h3,
-.upi-payment-card h3 {
+.summary-card h3 {
   font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -172,7 +566,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 14px;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.free-shipping-tag {
+  color: var(--success-color);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+.grand-total-row {
   font-weight: 600;
+  margin-bottom: 0;
+  margin-top: 8px;
 }
 
 .summary-grand-total {
@@ -181,53 +590,9 @@
   font-family: var(--font-serif);
 }
 
-/* UPI Payment QR box */
-.upi-payment-card p {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 16px;
-}
-
-.qr-code-wrapper {
-  background-color: var(--bg-white);
-  border: 1px solid var(--border-color);
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  width: 174px;
-  height: 174px;
-  margin: 0 auto 20px;
-}
-
-.qr-code-wrapper img {
-  width: 100%;
-  height: 100%;
-}
-
-.qr-code-placeholder {
-  width: 174px;
-  height: 174px;
-  border: 1px dashed var(--border-color);
-  border-radius: var(--radius-sm);
-  margin: 0 auto 20px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 12px;
-  padding: 20px;
-}
-
-.upi-id-box {
-  background-color: var(--primary-soft);
-  border: 1px solid var(--border-color);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  color: var(--primary-color);
-}
-
-/* Success layout styles */
+/* ==================== SUCCESS LAYOUT STYLES ==================== */
 .checkout-success-container {
-  padding: 80px 24px;
+  padding: 60px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -281,7 +646,7 @@
 }
 
 .back-navigation {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .back-btn {
@@ -361,17 +726,72 @@
   opacity: 0.8;
 }
 
+/* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 992px) {
   .checkout-grid {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-step-wizard {
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+  }
+
+  .step-subtitle {
+    display: none;
+  }
+
+  .wizard-connector {
+    margin: 0 10px;
+  }
+
+  .step-content-card {
+    padding: 20px;
   }
 }
 
 @media (max-width: 480px) {
+  .checkout-step-wizard {
+    padding: 10px 12px;
+  }
+
+  .step-title {
+    font-size: 12px;
+  }
+
+  .step-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
 
   .form-grid-two,
   .form-grid-three {
     grid-template-columns: 1fr;
+  }
+
+  .wizard-actions-bar {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .wizard-btn-next,
+  .wizard-btn-prev,
+  .checkout-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .upi-id-copy-box {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .upi-id-left {
+    align-items: center;
   }
 }
